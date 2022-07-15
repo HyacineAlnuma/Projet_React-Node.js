@@ -7,7 +7,7 @@ exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         let sql = `INSERT INTO users (email, passwordhash) VALUES ('${req.body.email}', '${hash}')`;
-        let query = db.query(sql, (err, result) => {
+        db.query(sql, (err, result) => {
             if (err) throw err;
             console.log(result);
             res.send(result);
@@ -18,7 +18,7 @@ exports.signup = (req, res, next) => {
 
 exports.login = (req, res, next) => {
     let sql = `SELECT * FROM users WHERE email = '${req.body.email}'`;
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) throw err;
         if (!result) {
             return res.status(401).json({ error: 'Utilisateur non trouvé !' });

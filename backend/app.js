@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
 
 const db = require('./db');
 
@@ -25,6 +26,8 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet({
     crossOriginResourcePolicy: false,
