@@ -1,24 +1,34 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const db = require('../db');
+const db = require('../db-config');
 
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
-        let sql = `INSERT INTO users (email, passwordhash) VALUES ('${req.body.email}', '${hash}')`;
-        db.query(sql, (err, result) => {
-            if (err) throw err;
-            console.log(result);
-            res.send(result);
-        });
+        if (req.body.email == "admin@gmail.com") {
+            let sql = `INSERT INTO users (email, passwordhash, role) VALUES (?, ?, ?)`;
+            db.query(sql, [req.body.email, hash, "admin"], (err, result) => {
+                if (err) throw err;
+                console.log(result);
+                res.send(result);
+            });
+        } else {
+            let sql = `INSERT INTO users (email, passwordhash, role) VALUES (?, ?, ?)`;
+            db.query(sql, [req.body.email, hash, "basicUser"], (err, result) => {
+                if (err) throw err;
+                console.log(result);
+                res.send(result);
+            });
+        }
     })
     .catch(error => res.status(500).json({ error }));
 };
 
 exports.login = (req, res, next) => {
-    let sql = `SELECT * FROM users WHERE email = '${req.body.email}'`;
-    db.query(sql, (err, result) => {
+    let sql = `SELECT * FROM users WHERE email = ?`;
+    db.query(sql, [req.body.email], (err, result) => {
         if (err) throw err;
         if (!result) {
             return res.status(401).json({ error: 'Utilisateur non trouvé !' });
@@ -32,7 +42,7 @@ exports.login = (req, res, next) => {
                     userId: result[0].id,
                     token: jwt.sign(
                         { userId: result[0].id },
-                        'TOKEN',
+                        process.env.TOKEN_KEY,
                         { expiresIn: '24h' }
                     )
                 });

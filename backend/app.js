@@ -3,7 +3,7 @@ const path = require('path');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 
-const db = require('./db');
+const db = require('./db-config');
 
 const usersRoutes = require('./routes/users');
 const postsRoutes = require('./routes/posts');
