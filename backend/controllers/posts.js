@@ -5,7 +5,11 @@ exports.getAllPosts = (req, res, next) => {
     let sql = 'SELECT * FROM posts';
     db.query(sql, (err, results) => {
         if (err) throw err;
-        res.status(200).json(results);
+        sql = 'SELECT * FROM users WHERE id = ?';
+        db.query(sql, [results[0].userId], (err, responses) => {
+            if (err) throw err;
+            res.status(200).json({posts: results, users: responses});
+        })
     });
 };
 
@@ -13,7 +17,11 @@ exports.getOnePost = (req, res, next) => {
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
-        res.status(200).json(result);
+        sql = 'SELECT * FROM users WHERE id = ?';
+        db.query(sql, [result[0].userId], (err, response) => {
+            if (err) throw err;
+            res.status(200).json({post: result, user: response});
+        })
     });
 };
 
@@ -24,11 +32,16 @@ exports.createPost = (req, res, next) => {
         ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${file.filename}`
     } : {...req.body};
-    let sql = `INSERT INTO posts (userId, textpost, imageUrl, likes) VALUES (?, ?, ?, '0')`;
-    db.query(sql, [postObject.userId, postObject.textpost, postObject.imageUrl], (err, result) => {
-        if (err) throw err;
-        res.status(201).json({ message: 'Post enregistré !'})
-    });
+    if (!req.file && postObject.textpost == null) {
+        res.status(400).json({ message: 'Il faut au moins une image ou du texte pour créer un post', action: 0});
+    } else {
+        let sql = `INSERT INTO posts (userId, textpost, imageUrl, likes) VALUES (?, ?, ?, '0')`;
+        db.query(sql, [postObject.userId, postObject.textpost, postObject.imageUrl], (err, result) => {
+            if (err) throw err;
+            console.log(result);
+            res.status(201).json({ message: 'Post enregistré !'})
+        });
+    }
 };
 
 exports.updatePost = (req, res, next) => {
@@ -44,7 +57,7 @@ exports.updatePost = (req, res, next) => {
         if (result.length < 1) {
             res.status(404).json({ error: new Error('Post inexistante !') });
         }
-        if (result[0].userId !== req.auth.userId || req.body.userRole == "admin") {
+        if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ error: new Error('Requête non authorisée !') });
         } 
         if (!file) {
@@ -73,7 +86,7 @@ exports.deletePost = (req, res, next) => {
         if (!result) {
             res.status(404).json({ error: new Error('Post inexistant !') });
         }
-        if (result[0].userId !== req.auth.userId || req.body.userRole == "admin") {
+        if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ error: new Error('Requête non authorisée !') });
         } 
         if (result[0].imageUrl !== null && result[0].imageUrl != "undefined") {
@@ -146,7 +159,7 @@ exports.deleteComment = (req, res, next) => {
         if (result.lenght < 1) {
             res.status(404).json({ error: new Error('Commentaire inexistant !') });
         } 
-        if (result[0].userId !== req.auth.userId || req.body.userRole == "admin") {
+        if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ error: new Error('Requête non authorisée !') });
         } else {
             sql = `DELETE FROM comments WHERE id = ?`;
@@ -163,7 +176,10 @@ exports.updateComment = (req, res, next) => {
     let sql = `SELECT * FROM comments WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
-        if (result[0].userId !== req.auth.userId || req.body.userRole !== "admin") {
+        if (result.lenght < 1) {
+            res.status(404).json({ error: new Error('Commentaire inexistant !') });
+        } 
+        if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ error: 'Requête non authorisée !' });
         } else {
             sql = `UPDATE comments SET comment = ? WHERE id = ?`;

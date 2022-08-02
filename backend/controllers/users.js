@@ -7,21 +7,12 @@ const db = require('../db-config');
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
-        if (req.body.email == "admin@gmail.com") {
-            let sql = `INSERT INTO users (email, passwordhash, role) VALUES (?, ?, ?)`;
-            db.query(sql, [req.body.email, hash, "admin"], (err, result) => {
+            let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, role) VALUES (?, ?, ?, ?, ?)`;
+            db.query(sql, [req.body.email, hash, req.body.username, req.body.pictureUrl, req.body.role], (err, result) => {
                 if (err) throw err;
                 console.log(result);
                 res.send(result);
             });
-        } else {
-            let sql = `INSERT INTO users (email, passwordhash, role) VALUES (?, ?, ?)`;
-            db.query(sql, [req.body.email, hash, "basicUser"], (err, result) => {
-                if (err) throw err;
-                console.log(result);
-                res.send(result);
-            });
-        }
     })
     .catch(error => res.status(500).json({ error }));
 };
