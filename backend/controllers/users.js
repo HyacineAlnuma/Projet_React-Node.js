@@ -7,7 +7,7 @@ const db = require('../db-config');
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
-            let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, role) VALUES (?, ?, ?, ?, ?)`;
+            let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, userRole) VALUES (?, ?, ?, ?, ?)`;
             db.query(sql, [req.body.email, hash, req.body.username, req.body.pictureUrl, req.body.role], (err, result) => {
                 if (err) throw err;
                 console.log(result);

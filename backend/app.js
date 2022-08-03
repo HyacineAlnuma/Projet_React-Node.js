@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const db = require('./db-config');
 
@@ -18,6 +19,7 @@ db.connect((err) => {
     }
 });
 
+app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
