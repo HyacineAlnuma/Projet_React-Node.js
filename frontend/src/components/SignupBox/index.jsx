@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
-import { FiMail, FiDownload } from "react-icons/fi";
+import { FiMail } from "react-icons/fi";
 import { BiKey } from "react-icons/bi";
 
 const FormBox = styled.div `
-    margin: auto;
-    margin-top: 5%;
+    margin: 4% auto;
     padding: 40px;
-    height: 650px;
+    min-height: 630px;
+    max-height: 850px;
     width: 450px;
     background-color: ${colors.backgroundWhite};
     border-radius: 16px;
@@ -26,7 +26,7 @@ const StyledTitle = styled.h2 `
 const StyledForm = styled.form `
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 40px;
     justify-content: center;
     align-items: center;
 `;
@@ -65,15 +65,18 @@ const StyledBtn = styled.input `
     width: 200px;
     height: 50px;
     font-size: 1.1rem;
-    background-color: ${colors.primary};
-    color: ${colors.backgroundWhite};
+    background-color: ${colors.secondary};
+    color: ${colors.primary};
     border: 0px;
     border-radius: 40px;
     position: absolute;
     bottom: 40px;
     left: 28%;
+    transition: 150ms;
     &:hover {
         cursor: pointer;
+        background-color: ${colors.primary};
+        color: ${colors.backgroundWhite};
     } 
 `;
 
@@ -86,31 +89,28 @@ const EmailWrapper = styled.div `
 const KeyWrapper = styled.div `
     position: absolute;
     left: 120px;
-    top: 239px;
+    top: 229px;
+`;
+
+const PictureTitle = styled.p `
+    width: 60%;
+    height: 20px;
+    padding: 10px 0 0 10px;
+    font-size: 1.2rem;
+    color: #747474;
+    position: relative;
 `;
 
 const PictureWrapper = styled.div `
     display: flex;
-    width: 60%;
-    height: 50px;
-    p {
-        font-size: 1.2rem;
-        color: #747474;
-        padding: 10px;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 70px;
+    img {
+        width: 100px;
+        height: auto;
+        margin: auto;
     }
-    button {
-        height: 25px;
-        width: 40px;
-        padding: 2px;
-        position: absolute;
-        bottom: 20px;
-        right: 20px;
-        &:hover {
-            cursor: pointer;
-        }
-    }
-    border-bottom: 1px solid ${colors.tertiary};
-    position: relative;
 `;
 
 
@@ -118,16 +118,30 @@ function SignupBox() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const userData = {
-        email: email,
-        password: password,
-        username: username,
-        role: "basicUser"
+    const [file, setFile] = useState();
+    const [image, setImage] = useState('');
+
+    function imageHandler(e) {
+        let files = Array.from(e.target.files);
+        console.log(files);
+        setFile(files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(files[0]);
+        reader.onload = () => {
+            console.log(reader.result);
+            setImage(reader.result?.toString() ?? '');
+        };
     }
 
     function handleSubmit(e) {
         e.preventDefault();
-        axios.post('http://localhost:3000/api/auth/signup', userData)
+        const userData = new FormData();
+        userData.append('email', email);
+        userData.append('password', password);
+        userData.append('username', username);
+        userData.append('userRole', 'basicUser');
+        userData.append('pictureUrl', file);
+        axios.post('http://localhost:4200/api/auth/signup', userData)
             .then(res => console.log(res))
             .catch(err => console.log(err))
     }
@@ -141,9 +155,10 @@ function SignupBox() {
                 <StyledInput type="email" placeholder='Adresse email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
                 <StyledInput type="password" placeholder='Mot de passe' value={password} onChange={(e) => setPassword(e.target.value)} required/>
                 <UsernameInput type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required/>
+                <PictureTitle>Photo de profil</PictureTitle>
                 <PictureWrapper>
-                    <p>Photo de profil</p>
-                    <button><FiDownload /></button>
+                    <input type="file" onChange={(e) => {imageHandler(e)}}/>
+                    { image !== '' && <img src={image} alt="" /> }
                 </PictureWrapper>
                 <StyledBtn type="submit" value="Créer un compte"/>
             </StyledForm>

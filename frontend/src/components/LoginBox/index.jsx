@@ -50,15 +50,18 @@ const StyledBtn = styled.input `
     width: 200px;
     height: 50px;
     font-size: 1.1rem;
-    background-color: ${colors.primary};
-    color: ${colors.backgroundWhite};
+    background-color: ${colors.secondary};
+    color: ${colors.primary};
     border: 0px;
     border-radius: 40px;
     position: absolute;
     bottom: 40px;
     left: 28%;
+    transition: 150ms;
     &:hover {
         cursor: pointer;
+        background-color: ${colors.primary};
+        color: ${colors.backgroundWhite};
     } 
 `;
 
@@ -84,7 +87,7 @@ function LoginBox() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        axios.post('http://localhost:3000/api/auth/login', userData)
+        axios.post('http://localhost:4200/api/auth/login', userData)
             .then(res => console.log(res))
             .catch(err => console.log(err))
     }

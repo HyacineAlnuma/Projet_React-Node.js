@@ -22,7 +22,7 @@
  /**
   * Ici on configure le port qui va être utilisé.
   */
- const port = normalizePort(process.env.PORT || '3000');
+ const port = normalizePort(process.env.PORT || '4200');
  app.set('port', port);
  
  /**
@@ -60,4 +60,4 @@
      console.log('Listening on ' + bind);
  });
  
- server.listen(process.env.PORT || 3000);
+ server.listen(port);

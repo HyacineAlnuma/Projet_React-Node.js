@@ -5,16 +5,26 @@ require('dotenv').config();
 const db = require('../db-config');
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
-    .then(hash => {
-            let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, userRole) VALUES (?, ?, ?, ?, ?)`;
-            db.query(sql, [req.body.email, hash, req.body.username, req.body.pictureUrl, req.body.role], (err, result) => {
-                if (err) throw err;
-                console.log(result);
-                res.send(result);
-            });
-    })
-    .catch(error => res.status(500).json({ error }));
+    const file = req.files ? req.files[0] : undefined;
+    const postObject = file ?
+    {
+        ...req.body,
+        pictureUrl: `${req.protocol}://${req.get('host')}/images/${file.filename}`
+    } : {...req.body};
+    if (postObject.email == null || postObject.username == null) {
+        res.status(401).json({ error: 'Veuillez précisez un email et un username' });
+    } else {
+        bcrypt.hash(postObject.password, 10)
+        .then(hash => {
+                let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, userRole) VALUES (?, ?, ?, ?, ?)`;
+                db.query(sql, [postObject.email, hash, postObject.username, postObject.pictureUrl, postObject.userRole], (err, result) => {
+                    if (err) throw err;
+                    console.log(result);
+                    res.send(result);
+                });
+        })
+        .catch(error => res.status(500).json({ error }));
+    }
 };
 
 exports.login = (req, res, next) => {

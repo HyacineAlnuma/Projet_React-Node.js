@@ -1,5 +1,5 @@
 import logo from '../../assets/icon-left-font.png';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors'
 
@@ -22,25 +22,26 @@ const StyledNav = styled.nav`
 const StyledLink = styled(Link)`
     margin-right: 50px;
     font-size: 1.1rem;
-`;
-
-const StyledLinkBis = styled(Link)`
-    margin-right: 50px;
-    font-size: 1.1rem;
-    background-color: ${colors.secondary};
-    color: ${colors.primary};
     padding: 13px 35px;
-    border-radius: 30px;
+    transition: 150ms; 
+    border-radius: 30px; 
+    &:hover {
+        background-color: ${colors.primary};
+        color: ${colors.backgroundWhite};
+    }
+    &:active {
+        background-color: ${colors.secondary};
+        color: ${colors.primary};
+        border-radius: 30px; 
+    }
 `;
 
 function Header() {
-    const { pathname } = useLocation();
-
     return(
         <HeaderStyle>
             <ImageStyle src= {logo} alt='Logo Groupomania'></ImageStyle>
             <StyledNav>
-                <StyledLink style={ pathname === '/' ? {StyledLink} : {StyledLinkBis}} to="/">
+                <StyledLink to="/signup">
                     Créer un compte
                 </StyledLink>
                 <StyledLink to="/login">

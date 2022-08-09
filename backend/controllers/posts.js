@@ -2,26 +2,18 @@ const db = require('../db-config');
 const fs = require('fs');
 
 exports.getAllPosts = (req, res, next) => {
-    let sql = 'SELECT * FROM posts';
+    let sql = 'SELECT p.*, u.email, u.username, u.pictureUrl FROM posts p INNER JOIN users u ON p.userId = u.id';
     db.query(sql, (err, results) => {
         if (err) throw err;
-        sql = 'SELECT * FROM users WHERE id = ?';
-        db.query(sql, [results[0].userId], (err, responses) => {
-            if (err) throw err;
-            res.status(200).json({posts: results, users: responses});
-        })
+        res.status(201).json({ results })
     });
 };
 
 exports.getOnePost = (req, res, next) => {
-    let sql = `SELECT * FROM posts WHERE id = ?`;
+    let sql = `SELECT p.*, u.email, u.username, u.pictureUrl FROM posts p INNER JOIN users u ON p.userId = u.id WHERE p.id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
-        sql = 'SELECT * FROM users WHERE id = ?';
-        db.query(sql, [result[0].userId], (err, response) => {
-            if (err) throw err;
-            res.status(200).json({post: result, user: response});
-        })
+        res.status(201).json({ result })
     });
 };
 
@@ -32,14 +24,14 @@ exports.createPost = (req, res, next) => {
         ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${file.filename}`
     } : {...req.body};
-    if (!req.file && postObject.textpost == null) {
-        res.status(400).json({ message: 'Il faut au moins une image ou du texte pour créer un post', action: 0});
+    if (!file && postObject.textpost == null) {
+        res.status(400).json({ message: 'Il faut au moins une image ou du texte pour créer un post', action: 0 });
     } else {
         let sql = `INSERT INTO posts (userId, textpost, imageUrl, likes) VALUES (?, ?, ?, '0')`;
         db.query(sql, [postObject.userId, postObject.textpost, postObject.imageUrl], (err, result) => {
             if (err) throw err;
             console.log(result);
-            res.status(201).json({ message: 'Post enregistré !'})
+            res.status(201).json({ message: 'Post enregistré !', action: 1 })
         });
     }
 };
@@ -58,21 +50,24 @@ exports.updatePost = (req, res, next) => {
             res.status(404).json({ error: new Error('Post inexistante !') });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ error: new Error('Requête non authorisée !') });
+            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
         } 
         if (!file) {
             sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
             db.query(sql, [postObject.textpost, req.params.id], (err, result) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Post modifié !'})
+                res.status(201).json({ message: 'Post modifié !', action: 1 })
             })
+        }
+        if (!file && postObject.textpost == null) {
+            res.status(400).json({ message: 'Il faut au moins une image ou du texte pour modifier un post', action: 0 });
         } else {
             const filename = result[0].imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 sql = `UPDATE posts SET textpost = ?, imageUrl = ? WHERE id = ?`;
                 db.query(sql, [postObject.textpost, postObject.imageUrl, req.params.id], (err, result) => {
                     if (err) throw err;
-                    res.status(201).json({ message: 'Post modifié !'})
+                    res.status(201).json({ message: 'Post modifié !', action: 1 })
                 });
             });
         }
@@ -87,7 +82,7 @@ exports.deletePost = (req, res, next) => {
             res.status(404).json({ error: new Error('Post inexistant !') });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ error: new Error('Requête non authorisée !') });
+            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
         } 
         if (result[0].imageUrl !== null && result[0].imageUrl != "undefined") {
             const filename = result[0].imageUrl.split('/images/')[1];
@@ -95,14 +90,14 @@ exports.deletePost = (req, res, next) => {
                 sql = `DELETE FROM posts WHERE id = ?`;
                 db.query(sql, [req.params.id], (err, result) => {
                     if (err) throw err;
-                    res.status(201).json({ message: 'Post supprimé !'})
+                    res.status(201).json({ message: 'Post supprimé !', action: 1 })
                 });
             });
         } else {
             sql = `DELETE FROM posts WHERE id = ?`;
             db.query(sql, [req.params.id], (err, result) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Post supprimé !'})
+                res.status(201).json({ message: 'Post supprimé !', action: 1 })
             });
         }
     });
@@ -122,7 +117,7 @@ exports.likePost = (req, res, next) => {
                 sql = `DELETE FROM likes WHERE id = ?`;
                 db.query(sql, [response[0].id], (err, resp) => {
                     if (err) throw err;
-                    res.status(201).json({ message: 'Post disliké !', action: 0});
+                    res.status(201).json({ message: 'Post disliké !', action: 1});
                 })
             } else {
             sql = `INSERT INTO likes (userId, postId) VALUES (?, ?)`;
@@ -146,7 +141,7 @@ exports.commentPost = (req, res, next) => {
             sql = `INSERT INTO comments (userId, postId, comment) VALUES (?, ?, ?)`;
             db.query(sql, [req.body.userId, result[0].id, commentObject.comment], (err, result) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Post commenté !'});
+                res.status(201).json({ message: 'Post commenté !', action: 1 });
             })
         }
     })
@@ -160,12 +155,12 @@ exports.deleteComment = (req, res, next) => {
             res.status(404).json({ error: new Error('Commentaire inexistant !') });
         } 
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ error: new Error('Requête non authorisée !') });
+            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
         } else {
             sql = `DELETE FROM comments WHERE id = ?`;
             db.query(sql, [req.params.id], (err, response) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Commentaire supprimé !', action: 0});
+                res.status(201).json({ message: 'Commentaire supprimé !', action: 1});
             })
         }
     })
@@ -180,7 +175,7 @@ exports.updateComment = (req, res, next) => {
             res.status(404).json({ error: new Error('Commentaire inexistant !') });
         } 
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ error: 'Requête non authorisée !' });
+            res.status(403).json({ error: 'Requête non authorisée !', action: 0});
         } else {
             sql = `UPDATE comments SET comment = ? WHERE id = ?`;
             db.query(sql, [putObject.comment, req.params.id], (err, response) => {
