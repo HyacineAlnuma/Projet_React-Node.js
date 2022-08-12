@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
@@ -115,6 +116,9 @@ function Home() {
             .catch(err => console.log(err))
     }
 
+    // if (!wait) {
+    //     return <Navigate replace to='/login' />;
+    // } else {
     return(
         <HomeBox>
             <StyledTitle>Fil d'actualité</StyledTitle>
@@ -131,6 +135,7 @@ function Home() {
             </CreatePost>
         </HomeBox>
     );
+    //}
 }
 
 export default Home;

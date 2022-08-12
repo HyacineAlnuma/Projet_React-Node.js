@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
@@ -114,12 +115,13 @@ const PictureWrapper = styled.div `
 `;
 
 
-function SignupBox() {
+function SignupBox({ token, setToken }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [file, setFile] = useState();
     const [image, setImage] = useState('');
+    const navigate = useNavigate();
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);
@@ -142,7 +144,11 @@ function SignupBox() {
         userData.append('userRole', 'basicUser');
         userData.append('pictureUrl', file);
         axios.post('http://localhost:4200/api/auth/signup', userData)
-            .then(res => console.log(res))
+            .then(res => 
+                setToken(res.data.token),
+                navigate('/home'),
+                console.log(token)
+                )
             .catch(err => console.log(err))
     }
 

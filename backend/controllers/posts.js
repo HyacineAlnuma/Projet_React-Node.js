@@ -47,7 +47,7 @@ exports.updatePost = (req, res, next) => {
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (result.length < 1) {
-            res.status(404).json({ error: new Error('Post inexistante !') });
+            res.status(404).json({ message: 'Post inexistant !', action: 0 });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ message: 'Requête non authorisée !', action: 0 });

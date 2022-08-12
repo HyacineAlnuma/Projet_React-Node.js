@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
@@ -77,9 +78,12 @@ const KeyWrapper = styled.div `
     top: 264px;
 `;
 
-function LoginBox() {
+function LoginBox({ token, setToken }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate();
+    
     const userData = {
         email: email,
         password: password
@@ -88,7 +92,11 @@ function LoginBox() {
     function handleSubmit(e) {
         e.preventDefault();
         axios.post('http://localhost:4200/api/auth/login', userData)
-            .then(res => console.log(res))
+            .then(res => 
+                setToken(res.data.token),
+                navigate('/home'),
+                console.log(token)
+                )
             .catch(err => console.log(err))
     }
 
