@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
 import { BiKey } from "react-icons/bi";
+import setCookie  from '../../utils/hooks/SetCookie';
 
 const FormBox = styled.div `
     margin: auto;
@@ -78,7 +79,7 @@ const KeyWrapper = styled.div `
     top: 264px;
 `;
 
-function LoginBox({ token, setToken }) {
+function LoginBox({ auth, setAuth }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -92,18 +93,22 @@ function LoginBox({ token, setToken }) {
     function handleSubmit(e) {
         e.preventDefault();
         axios.post('http://localhost:4200/api/auth/login', userData)
-            .then(res => 
-                setToken(res.data.token),
-                navigate('/home'),
-                console.log(token)
-                )
+            .then(res => {
+                    localStorage.setItem('userId', res.data.userId);
+                    localStorage.setItem('username', res.data.username);
+                    localStorage.setItem('pictureUrl', res.data.pictureUrl);
+                    setCookie('token', res.data.token);
+                    setAuth(true);
+                    navigate('/home');
+                }
+            )
             .catch(err => console.log(err))
     }
 
     return (
         <FormBox>
             <StyledTitle>Se connecter</StyledTitle>
-            <EmailWrapper><FiMail size={23}/></EmailWrapper>
+            <EmailWrapper><FiMail /></EmailWrapper>
             <KeyWrapper><BiKey size={27}/></KeyWrapper>
             <StyledForm action="" onSubmit={handleSubmit} >
                 <StyledInput type="email" placeholder='Adresse email' value={email} onChange={(e) => {setEmail(e.target.value)}} />

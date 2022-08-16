@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
-import photo from '../../assets/go.jpg'
 
 const HomeBox = styled.div `
     width: 50%;
@@ -91,7 +89,9 @@ const SubmitBtn = styled.input `
 function Home() {
     const [textpost, setTextpost] = useState('');
     const [file, setFile] = useState();
-    const [image, setImage] = useState('');
+    const profilePic = localStorage.getItem('pictureUrl');
+
+    const userId = localStorage.getItem('userId');
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);
@@ -99,15 +99,12 @@ function Home() {
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
-        reader.onload = () => {
-            console.log(reader.result);
-            setImage(reader.result?.toString() ?? '');
-        };
     }
 
     function handleSubmit(e) {
         e.preventDefault();
         const postData = new FormData();
+        postData.append('userId', userId);
         postData.append('textpost', textpost);
         postData.append('imageUrl', file);
         console.log(postData);
@@ -116,16 +113,13 @@ function Home() {
             .catch(err => console.log(err))
     }
 
-    // if (!wait) {
-    //     return <Navigate replace to='/login' />;
-    // } else {
     return(
         <HomeBox>
             <StyledTitle>Fil d'actualité</StyledTitle>
             <TitleUnderline></TitleUnderline>
             <CreatePost action='' onSubmit={handleSubmit}>
                 <ImageWrapper>
-                    <img src={photo} alt="" />
+                    <img src={profilePic} alt="" />
                 </ImageWrapper>
                 <InputWrapper>
                     <input type="text" placeholder='Écrivez ce qui vous passe par l’esprit...' value={textpost} onChange={(e) => setTextpost(e.target.value)}/>
@@ -135,7 +129,6 @@ function Home() {
             </CreatePost>
         </HomeBox>
     );
-    //}
 }
 
 export default Home;

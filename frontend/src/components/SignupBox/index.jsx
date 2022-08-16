@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
 import { BiKey } from "react-icons/bi";
+import setCookie from '../../utils/hooks/SetCookie';
 
 const FormBox = styled.div `
     margin: 4% auto;
@@ -115,7 +116,7 @@ const PictureWrapper = styled.div `
 `;
 
 
-function SignupBox({ token, setToken }) {
+function SignupBox({ auth, setAuth }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -145,9 +146,9 @@ function SignupBox({ token, setToken }) {
         userData.append('pictureUrl', file);
         axios.post('http://localhost:4200/api/auth/signup', userData)
             .then(res => 
-                setToken(res.data.token),
+                setCookie('token', res.data.token),
+                setAuth(true),
                 navigate('/home'),
-                console.log(token)
                 )
             .catch(err => console.log(err))
     }
