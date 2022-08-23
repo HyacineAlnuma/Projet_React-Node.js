@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
+import Cookie from 'js-cookie';
 
 const ProfileBox = styled.form `
     width: 50%;
@@ -71,6 +72,14 @@ function Profile() {
     const navigate = useNavigate();
 
     const userId = localStorage.getItem('userId');
+
+    useEffect(() => {
+        let token = Cookie.get('token');
+        console.log(token);
+        if (token == null) {
+            navigate('/login');
+        }
+    }, []);
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);

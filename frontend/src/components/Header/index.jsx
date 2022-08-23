@@ -76,13 +76,14 @@ const MenuBtn = styled(Link) `
 `;
 
 const OpenMenuBtn = styled.button `
-    width: 210px;
+    max-width: 400px;
     display: flex;
     align-items: center;
     border: none;
     outline: none;
     background-color: ${colors.secondary};
     border-radius: 30px; 
+    color: ${colors.primary};
     p {
         color: ${colors.primary};
         margin: 15px;
@@ -91,6 +92,7 @@ const OpenMenuBtn = styled.button `
     }
     &:hover {
         background-color: ${colors.primary};
+        color: ${colors.backgroundWhite};
         p {
             color: ${colors.backgroundWhite};
         }
@@ -98,6 +100,7 @@ const OpenMenuBtn = styled.button `
     }
     ${(props) => props.state === true &&
         `background-color: ${colors.primary};
+        color: ${colors.backgroundWhite};
         p {
             color: ${colors.backgroundWhite};
         }`
@@ -110,28 +113,31 @@ const ImageWrapper = styled.div `
     width: 40px;
     height 40px;
     overflow: hidden;
-    border-radius: 50px;
     margin: 0 15px;
     img {
         max-height: 100%;
+        border-radius: 50%;
         width: auto;
+        object-fit: cover;
     }
 `;
 
 const IconWrapper = styled.div `
     margin: 18px 15px 15px 15px;
+   
 `;
 
-function Header({ auth, setAuth }) {
+// color: ${colors.tertiary};
+
+function Header() {
     const location = useLocation();
     const [openMenu, setOpenMenu] = useState(false);
     const profilePic = localStorage.getItem('pictureUrl');
     const username = localStorage.getItem('username');
-    let iconStyle = { color: "white" };
+
 
     function Logout() {
         Cookie.remove('token');
-        setAuth(false);
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         localStorage.removeItem('pictureUrl');
@@ -139,9 +145,9 @@ function Header({ auth, setAuth }) {
 
     return(
         <HeaderStyle>
-            <ImageStyle src= {logo} alt='Logo Groupomania'></ImageStyle>
+            <Link to='/home'><ImageStyle src= {logo} alt='Logo Groupomania'></ImageStyle></Link>
             <StyledNav>
-                { location.pathname !== '/home' &&
+                { (location.pathname !== '/home' && location.pathname !== '/profile') &&
                     <>
                     <StyledLink to="/signup" page={location.pathname}>
                         Créer un compte
@@ -151,8 +157,8 @@ function Header({ auth, setAuth }) {
                     </StyledLink>
                     </>
                 }   
-                { location.pathname === '/home'  &&
-                    openMenu ? (
+                { (location.pathname === '/home' || location.pathname === '/profile')  &&
+                    ( openMenu ? (
                         <>
                         <OpenMenuBtn onClick={() => setOpenMenu(false)} state={openMenu}>
                             <ImageWrapper>
@@ -160,7 +166,7 @@ function Header({ auth, setAuth }) {
                             </ImageWrapper>
                             <p>{username}</p>
                             <IconWrapper>
-                                <CgClose size={30} style={iconStyle}/>
+                                <CgClose size={30}/>
                             </IconWrapper>                 
                         </OpenMenuBtn>
                         <StyledMenu>
@@ -177,10 +183,10 @@ function Header({ auth, setAuth }) {
                             </ImageWrapper>
                             <p>{username}</p>
                             <IconWrapper>
-                                <FiMenu size={30} style={iconStyle}/>     
+                                <FiMenu size={30}/>     
                             </IconWrapper>                 
                         </OpenMenuBtn>
-                    )
+                    ) )
                 }
             </StyledNav>
         </HeaderStyle>

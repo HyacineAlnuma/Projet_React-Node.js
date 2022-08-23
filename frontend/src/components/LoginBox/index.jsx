@@ -79,7 +79,7 @@ const KeyWrapper = styled.div `
     top: 264px;
 `;
 
-function LoginBox({ auth, setAuth }) {
+function LoginBox() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -98,7 +98,6 @@ function LoginBox({ auth, setAuth }) {
                     localStorage.setItem('username', res.data.username);
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);
                     setCookie('token', res.data.token);
-                    setAuth(true);
                     navigate('/home');
                 }
             )

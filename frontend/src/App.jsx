@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import GlobalStyle from './utils/style/GlobalStyle';
-// import Cookie from 'js-cookie';
+
 
 
 import Header from './components/Header';
@@ -11,28 +11,32 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 
 function App() {
-    const [auth, setAuth] = useState(false);
-    // const token = Cookie.get('token');
+
+    //const token = Cookie.get('token');
     // console.log(token);
 
     return (
         <BrowserRouter>
             <GlobalStyle />
-            <Header auth={auth} setAuth={setAuth} />
+            <Header />
             <Routes>
-                {!auth && (
+                {/* {!token && (
                     <>
-                    <Route path="/signup" element={<SignupBox auth={auth} setAuth={setAuth} />}/>
-                    <Route path="/login" element={<LoginBox auth={auth} setAuth={setAuth} />}/> 
+                    <Route path="/signup" element={<SignupBox  />}/>
+                    <Route path="/login" element={<LoginBox />}/> 
                     </>
                 )}
-                {auth && (
+                {token && (
                     <>
                     <Route path="/home" element={<Home />}/> 
                     <Route path="/profile" element={<Profile />}/>
                     </>
                 )}
-                <Route path='*' element={<Navigate to={auth ? "/home" : "/login"}/>}/>
+                <Route path='*' element={<Navigate to={token ? "/home" : "/login"}/>}/> */}
+                <Route path="/signup" element={<SignupBox  />}/>
+                <Route path="/login" element={<LoginBox />}/> 
+                <Route path="/home" element={<Home />}/> 
+                <Route path="/profile" element={<Profile />}/>
             </Routes>
         </BrowserRouter>
     );

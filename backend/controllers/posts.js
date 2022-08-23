@@ -2,10 +2,21 @@ const db = require('../db-config');
 const fs = require('fs');
 
 exports.getAllPosts = (req, res, next) => {
-    let sql = 'SELECT p.*, u.email, u.username, u.pictureUrl FROM posts p INNER JOIN users u ON p.userId = u.id';
+    let comments = [];
+    let sql = 'SELECT p.*, u.email, u.username, u.pictureUrl FROM posts p INNER JOIN users u ON p.userId = u.id ORDER BY p.id DESC';
     db.query(sql, (err, results) => {
         if (err) throw err;
-        res.status(201).json({ results })
+        res.status(201).json({ results });
+        // for (let post of results) {
+        //     sql = 'SELECT * FROM comments WHERE postId = ?';
+        //     db.query(sql, [post.id], (error, response) => {
+        //         if (error) throw error;
+        //         comments.push(response);
+        //         console.log(comments);
+        //     })
+        // }
+        // console.log(comments);
+        // res.status(201).json({ posts: results, comments: comments });
     });
 };
 

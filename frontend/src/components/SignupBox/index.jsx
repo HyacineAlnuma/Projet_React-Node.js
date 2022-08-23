@@ -147,7 +147,6 @@ function SignupBox({ auth, setAuth }) {
         axios.post('http://localhost:4200/api/auth/signup', userData)
             .then(res => 
                 setCookie('token', res.data.token),
-                setAuth(true),
                 navigate('/home'),
                 )
             .catch(err => console.log(err))

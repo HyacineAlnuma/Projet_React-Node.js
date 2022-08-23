@@ -69,28 +69,35 @@ exports.modifyProfile = (req, res, next) => {
         }
         // if (result[0].id !== req.body.userId && req.body.userRole !== "admin") {
         //     res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
-        // } 
-        if (!file) {
-            sql = `UPDATE users SET username = ? WHERE id = ?`;
-            db.query(sql, [postObject.username, req.body.userId], (err, result) => {
-                if (err) throw err;
-                res.status(201).json({ message: 'Profil modifié !', action: 1 })
-            })
-        }
+        // }     
         if (!file && postObject.username == null) {
             res.status(400).json({ message: "Il faut au moins une image ou du nom d'utilisateur pour modifier le profil", action: 0 });
         } else {
-            const filename = result[0].pictureUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                sql = `UPDATE users SET username = ?, pictureUrl = ? WHERE id = ?`;
-                db.query(sql, [postObject.username, postObject.pictureUrl, req.body.userId], (err, result) => {
+            const username = postObject.username ? postObject.username : result[0].username;
+            if (!file) {
+                sql = `UPDATE users SET username = ? WHERE id = ?`;
+                db.query(sql, [username, req.body.userId], (err, results) => {
                     if (err) throw err;
                     res.status(201).json({ message: 'Utilisateur modifié !',
-                                           action: 1,
-                                           pictureUrl: postObject.pictureUrl,
-                                           username: postObject.username })
+                                            action: 1,
+                                            pictureUrl: result[0].pictureUrl,
+                                            username: username })
+                })
+            }  else {     
+                const filename = result[0].pictureUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    console.log(req.body);
+                    console.log(req.files);
+                    sql = `UPDATE users SET username = ?, pictureUrl = ? WHERE id = ?`;
+                    db.query(sql, [username, postObject.pictureUrl, req.body.userId], (err, result) => {
+                        if (err) throw err;
+                        res.status(201).json({ message: 'Utilisateur modifié !',
+                                                action: 1,
+                                                pictureUrl: postObject.pictureUrl,
+                                                username: username })
+                    });
                 });
-            });
+            }
         }
     });
 };
