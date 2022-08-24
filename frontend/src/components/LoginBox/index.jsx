@@ -14,6 +14,7 @@ const FormBox = styled.div `
     height: 500px;
     width: 450px;
     background-color: ${colors.backgroundWhite};
+    color: ${colors.tertiary};
     border-radius: 16px;
     box-shadow: 1px 1px 200px #DFDFDF;
     position: relative;

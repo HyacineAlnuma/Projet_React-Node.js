@@ -127,8 +127,6 @@ const IconWrapper = styled.div `
    
 `;
 
-// color: ${colors.tertiary};
-
 function Header() {
     const location = useLocation();
     const [openMenu, setOpenMenu] = useState(false);

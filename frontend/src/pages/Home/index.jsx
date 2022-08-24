@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
-import { BiHeart,BiCommentDetail, BiSend, BiDotsVerticalRounded } from 'react-icons/bi';
+import { BiHeart,BiCommentDetail, BiSend, BiDotsVerticalRounded, BiDownload } from 'react-icons/bi';
 import Cookie from 'js-cookie';
 
 const HomeBox = styled.div `
@@ -37,7 +37,7 @@ const CreatePost = styled.form `
     display: flex;
     align-items: center;
     background-color: ${colors.backgroundWhite};
-    height: 120px;
+    min-height: 120px;
     border-radius: 15px;
     position: relative;
 `;
@@ -48,6 +48,8 @@ const ImageWrapper = styled.div `
     overflow: hidden;
     border-radius: 50px;
     margin: 0 30px;
+    position: absolute;
+    top: 25px;
     img {
         max-height: 100%;
         width: auto;
@@ -61,14 +63,30 @@ const InputWrapper = styled.div `
     input[type="text"] {
         height: 50px;
         width: 710px;
-        margin-top: 15px;
+        margin: 15px 0 0 140px;
         border: none;
         &:focus {
             outline: none;
         }
     }
     input[type="file"] {
-        margin-top: 5px;
+        visibility: hidden;
+        position: absolute;
+    }
+    label {
+        margin: 5px 0 0 140px;
+        color: ${colors.primary};
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap 10px;
+    }
+    img {
+        width: 100px;
+        height: auto;
+        margin-left: 140px;
     }
 `;
 
@@ -200,25 +218,25 @@ const CommentsSection = styled.div `
     background-color: ${colors.backgroundLight};
 `;
 
-const Comment = styled.div `
-    width: 100%;
-    display: flex;
-    align-items: center;
-    border-radius: 15px;
-    background-color: ${colors.backgroundLight};
-    > div {
-        display: flex;
-        align-items: center;
-        .name {
-           font-size: 1.1rem;
-           margin-left: 10px; 
-        }
-    }
-    .comment {
-        font-size: 1rem;
-        margin: 10px 0 0 20px;
-    }
-`;
+// const Comment = styled.div `
+//     width: 100%;
+//     display: flex;
+//     align-items: center;
+//     border-radius: 15px;
+//     background-color: ${colors.backgroundLight};
+//     > div {
+//         display: flex;
+//         align-items: center;
+//         .name {
+//            font-size: 1.1rem;
+//            margin-left: 10px; 
+//         }
+//     }
+//     .comment {
+//         font-size: 1rem;
+//         margin: 10px 0 0 20px;
+//     }
+// `;
 
 const AddComment = styled.form `
     display: flex;
@@ -255,6 +273,7 @@ const AddComment = styled.form `
 function Home() {
     const [textpost, setTextpost] = useState('');
     const [file, setFile] = useState();
+    const [image, setImage] = useState('');
     const [postsList, setPostsList] = useState([]);
     const [comment, setComment] = useState('');
     const [openMenu, setOpenMenu] = useState(false);
@@ -277,6 +296,10 @@ function Home() {
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
+        reader.onload = () => {
+            console.log(reader.result);
+            setImage(reader.result?.toString() ?? '');
+        };
     }
 
     function createPost(e) {
@@ -298,8 +321,8 @@ function Home() {
 
     }
 
-    function deletePost() {
-        
+    function deletePost(props) {
+        console.log(props)
     }
 
     function likePost() {
@@ -316,6 +339,7 @@ function Home() {
     useEffect(() => {
         axios.get('http://localhost:4200/api/posts')
         .then(res => {
+            console.log(res);
             setPostsList(res.data.results);
         })
         .catch(err => console.log(err))
@@ -331,12 +355,14 @@ function Home() {
                 </ImageWrapper>
                 <InputWrapper>
                     <input type="text" placeholder='Écrivez ce qui vous passe par l’esprit...' value={textpost} onChange={(e) => setTextpost(e.target.value)}/>
+                    <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
                     <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
+                    { image !== '' && <img src={image} alt="" /> }
                 </InputWrapper>
                 <SubmitBtn type="submit" value="Publier"/>
             </CreatePost>
                 {postsList.map(data => (
-                    <Post key={data.id}>
+                    <Post key={data.id} id={data.id}>
                         <div>
                             <PictureWrapper>
                                 <img src={data.pictureUrl} alt="" />
@@ -361,7 +387,7 @@ function Home() {
                             <OpenMenuBtn onClick={() => setOpenMenu(false)}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
                             <StyledMenu>
                                 <MenuBtn onClick={updatePost} >Modifier</MenuBtn>
-                                <MenuBtn onClick={deletePost}>Supprimer</MenuBtn>
+                                <MenuBtn onClick={() => deletePost()}>Supprimer</MenuBtn>
                             </StyledMenu>
                             </>
                             }
@@ -369,8 +395,8 @@ function Home() {
                         <p>{data.textpost}</p>
                         <img src={data.imageUrl} alt="" />
                         <IconsWrapper>
-                            <button onClick={likePost}><BiHeart size={24}/><p>16</p></button>
-                            <BiCommentDetail size={24}/><p>3</p>
+                            <button onClick={likePost}><BiHeart size={24}/><p>{data.likes}</p></button>
+                            <BiCommentDetail size={24}/><p>{data.commentsNumber}</p>
                         </IconsWrapper>
                         <CommentSeparation></CommentSeparation>
                         <CommentsSection>

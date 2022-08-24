@@ -143,6 +143,7 @@ exports.likePost = (req, res, next) => {
 
 exports.commentPost = (req, res, next) => {
     const commentObject = req.body;
+    console.log(req.body);
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
@@ -150,10 +151,15 @@ exports.commentPost = (req, res, next) => {
             res.status(404).json({ error: new Error('Post inexistant !') });
         } else {
             sql = `INSERT INTO comments (userId, postId, comment) VALUES (?, ?, ?)`;
-            db.query(sql, [req.body.userId, result[0].id, commentObject.comment], (err, result) => {
+            db.query(sql, [commentObject.userId, result[0].id, commentObject.comment], (err, response) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Post commenté !', action: 1 });
+                // res.status(201).json({ message: 'Post commenté !', action: 1 });
+                sql = `UPDATE posts SET commentsNumber = commentsNumber + 1 WHERE id = ?`;
+                db.query(sql, [result[0].id], (err, resp) => {
+                    if (err) throw err;
+                    res.status(201).json({ message: 'Commentaire ajouté !', action: 1 });
             })
+            });
         }
     })
 };

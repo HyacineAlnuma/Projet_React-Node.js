@@ -4,7 +4,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
-import { BiKey } from "react-icons/bi";
+import { BiKey, BiDownload } from "react-icons/bi";
 import setCookie from '../../utils/hooks/SetCookie';
 
 const FormBox = styled.div `
@@ -14,6 +14,7 @@ const FormBox = styled.div `
     max-height: 850px;
     width: 450px;
     background-color: ${colors.backgroundWhite};
+    color: ${colors.tertiary};
     border-radius: 16px;
     box-shadow: 1px 1px 200px #DFDFDF;
     position: relative;
@@ -108,15 +109,29 @@ const PictureWrapper = styled.div `
     flex-direction: column;
     justify-content: center;
     margin-bottom: 70px;
+    position: relative;
     img {
         width: 100px;
         height: auto;
         margin: auto;
     }
+    input[type="file"] {
+        visibility: hidden;
+        position: absolute;
+    }
+    label {
+        color: ${colors.primary};
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap 10px;
+        
+    }
 `;
 
 
-function SignupBox({ auth, setAuth }) {
+function SignupBox() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -163,7 +178,8 @@ function SignupBox({ auth, setAuth }) {
                 <UsernameInput type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required/>
                 <PictureTitle>Photo de profil</PictureTitle>
                 <PictureWrapper>
-                    <input type="file" onChange={(e) => {imageHandler(e)}}/>
+                    <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
+                    <input id='files' type="file" onChange={(e) => {imageHandler(e)}}/>
                     { image !== '' && <img src={image} alt="" /> }
                 </PictureWrapper>
                 <StyledBtn type="submit" value="Créer un compte"/>
