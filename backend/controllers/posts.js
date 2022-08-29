@@ -2,21 +2,10 @@ const db = require('../db-config');
 const fs = require('fs');
 
 exports.getAllPosts = (req, res, next) => {
-    let comments = [];
     let sql = 'SELECT p.*, u.email, u.username, u.pictureUrl FROM posts p INNER JOIN users u ON p.userId = u.id ORDER BY p.id DESC';
     db.query(sql, (err, results) => {
         if (err) throw err;
         res.status(201).json({ results });
-        // for (let post of results) {
-        //     sql = 'SELECT * FROM comments WHERE postId = ?';
-        //     db.query(sql, [post.id], (error, response) => {
-        //         if (error) throw error;
-        //         comments.push(response);
-        //         console.log(comments);
-        //     })
-        // }
-        // console.log(comments);
-        // res.status(201).json({ posts: results, comments: comments });
     });
 };
 
@@ -41,7 +30,6 @@ exports.createPost = (req, res, next) => {
         let sql = `INSERT INTO posts (userId, textpost, imageUrl, likes) VALUES (?, ?, ?, '0')`;
         db.query(sql, [postObject.userId, postObject.textpost, postObject.imageUrl], (err, result) => {
             if (err) throw err;
-            console.log(result);
             res.status(201).json({ message: 'Post enregistré !', action: 1 })
         });
     }
@@ -121,7 +109,7 @@ exports.likePost = (req, res, next) => {
         if (result.length < 1) {
             res.status(404).json({ error: new Error('Post inexistant !') });
         } 
-        sql = `SELECT * FROM likes WHERE userId = ? AND postId = ?`
+        sql = `SELECT * FROM likes WHERE userId = ? AND postId = ?`;
         db.query(sql, [req.body.userId, result[0].id], (err, response) => {
             if (err) throw err;
             if (response.length > 0) {
@@ -141,8 +129,16 @@ exports.likePost = (req, res, next) => {
     })
 };
 
+exports.getPostComments = (req, res, next) => {
+    let sql = 'SELECT c.*, u.email, u.username, u.pictureUrl FROM comments c INNER JOIN users u ON c.userId = u.id WHERE c.postId = ? ORDER BY c.id ASC';
+    db.query(sql, [req.params.id], (err, result) => {
+        if (err) throw err;
+        res.status(201).json({ result });
+    })
+}
+
 exports.commentPost = (req, res, next) => {
-    const commentObject = req.body;
+    const commentObject = req.body[0];
     console.log(req.body);
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
@@ -153,12 +149,11 @@ exports.commentPost = (req, res, next) => {
             sql = `INSERT INTO comments (userId, postId, comment) VALUES (?, ?, ?)`;
             db.query(sql, [commentObject.userId, result[0].id, commentObject.comment], (err, response) => {
                 if (err) throw err;
-                // res.status(201).json({ message: 'Post commenté !', action: 1 });
                 sql = `UPDATE posts SET commentsNumber = commentsNumber + 1 WHERE id = ?`;
                 db.query(sql, [result[0].id], (err, resp) => {
                     if (err) throw err;
                     res.status(201).json({ message: 'Commentaire ajouté !', action: 1 });
-            })
+                })
             });
         }
     })
@@ -177,7 +172,11 @@ exports.deleteComment = (req, res, next) => {
             sql = `DELETE FROM comments WHERE id = ?`;
             db.query(sql, [req.params.id], (err, response) => {
                 if (err) throw err;
-                res.status(201).json({ message: 'Commentaire supprimé !', action: 1});
+                sql = `UPDATE posts SET commentsNumber = commentsNumber - 1 WHERE id = ?`;
+                db.query(sql, [result[0].id], (err, resp) => {
+                    if (err) throw err;
+                    res.status(201).json({ message: 'Commentaire supprimé !', action: 1 });
+                })
             })
         }
     })

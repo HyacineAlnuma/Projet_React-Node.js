@@ -146,7 +146,6 @@ function SignupBox() {
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
         reader.onload = () => {
-            console.log(reader.result);
             setImage(reader.result?.toString() ?? '');
         };
     }
