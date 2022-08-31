@@ -6,7 +6,7 @@ import colors from '../../utils/style/colors';
 import { BiDownload } from 'react-icons/bi';
 import Cookie from 'js-cookie';
 
-import DisplayPost from '../../components/DisplayPost';
+import Post from '../../components/Post';
 
 const HomeBox = styled.div `
     width: 50%;
@@ -110,136 +110,6 @@ const SubmitBtn = styled.input `
     }
 `;
 
-// const Comment = styled.div `
-//     width: 100%;
-//     display: flex;
-//     align-items: center;
-//     border-radius: 15px;
-//     background-color: ${colors.backgroundLight};
-//     > div {
-//         display: flex;
-//         align-items: center;
-//         .name {
-//            font-size: 1.1rem;
-//            margin-left: 10px; 
-//         }
-//     }
-//     .comment {
-//         font-size: 1rem;
-//         margin: 10px 0 0 20px;
-//     }
-// `;
-
-// const Post = styled.div `
-//     background-color: ${colors.backgroundWhite};
-//     border-radius: 15px;
-//     margin-top: 50px;
-//     padding-bottom: 20px;
-//     margin-bottom: 50px;
-//     position: relative;
-//     > img {
-//         width: 200px;
-//         height: auto;
-//         margin-left: 20px;
-//     }
-//     > div {
-//         display: flex;
-//         align-items: center;
-//         .name {
-//             font-size: 1.1rem;
-//             font-weight: bold;
-//             margin-top: 25px;
-//         }
-//     }
-//     p {
-//         margin: 20px;
-//     }
-// `;
-
-// const PictureWrapper = styled.div `
-//     width: 50px;
-//     height 50px;
-//     overflow: hidden;
-//     border-radius: 50px;
-//     margin: 20px 0 10px 20px;
-//     img {
-//         max-height: 100%;
-//         width: auto;
-//     }
-// `;
-
-// const OpenMenuBtn = styled.button `
-//     position: absolute;
-//     top: 30px;
-//     right: 30px;
-//     width: 40px;
-//     background-color: ${colors.backgroundWhite};
-//     border: none;
-//     padding-top: 4px;
-//     border-radius: 50%;
-//     &:hover {
-//         background-color: ${colors.backgroundLight};
-//         cursor: pointer;
-//     }
-// `;
-
-// const StyledMenu = styled.div `
-//     width: 120px;
-//     height: 80px;
-//     display: flex;
-//     flex-direction: column;
-//     position: absolute;
-//     top: 70px;
-//     right: 30px;
-//     box-shadow: 1px 1px 200px #DFDFDF;
-// `;
-
-// const MenuBtn = styled.button `
-//     background-color: ${colors.backgroundWhite};
-//     height: 40px;
-//     border: none;
-//     &:hover {
-//         background-color: ${colors.backgroundLight};
-//         cursor: pointer;
-//     }
-// `;
-
-// const IconsWrapper = styled.div `
-//     margin-left: 20px;
-//     display: flex;
-//     align-items: center;
-//     color: ${colors.primary};
-//     p {
-//         margin: 20px 20px 20px 5px !important;
-//         color: ${colors.tertiary};
-//     }
-//     > button {
-//         display: flex;
-//         align-items: center;
-//         padding-left: 5px;
-//         background-color: ${colors.backgroundWhite};
-//         color: ${colors.primary};
-//         border: none;
-//         cursor: pointer;
-//     }
-// `;
-
-// const CommentSeparation = styled.div `
-//     width: 90%;
-//     margin: 0 auto 20px;
-//     height: 1px;
-//     background-color: #F0F0F0;
-// `;
-
-// const CommentsSection = styled.div `
-//     width: 95%;
-//     display: flex;
-//     flex-direction: column;
-//     margin: 0 auto;
-//     border-radius: 15px;
-//     background-color: ${colors.backgroundLight};
-// `;
-
 function Home() {
     const [textpost, setTextpost] = useState('');
     const [file, setFile] = useState();
@@ -260,7 +130,6 @@ function Home() {
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);
-        console.log(files);
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
@@ -312,7 +181,7 @@ function Home() {
                 <SubmitBtn type="submit" value="Publier"/>
             </CreatePost>
             {postsList.map(data => (
-                <DisplayPost id={data}/>
+                <Post key={data.id} {...data}/>
             ))}
                         {/* <div>
                             <PictureWrapper>

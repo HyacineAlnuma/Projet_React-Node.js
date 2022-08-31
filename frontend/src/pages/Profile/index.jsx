@@ -10,11 +10,20 @@ const ProfileBox = styled.form `
     margin: auto;
     display: flex:
     flex-direction: column;
+    color: ${colors.tertiary};
+    p {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #A9A9A9;
+    }
+    img {
+        width: 100px;
+        height: auto;
+    }
 `;
 
 const StyledTitle = styled.h2 `
     margin: 50px 0;
-    color: ${colors.tertiary};
     font-size: 2rem;
     font-weight: 600;
     position: relative;
@@ -69,13 +78,13 @@ const StyledBtn = styled.input `
 function Profile() {
     const [username, setUsername] = useState('');
     const [file, setFile] = useState();
+    const [image, setImage] = useState('');
     const navigate = useNavigate();
 
     const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         let token = Cookie.get('token');
-        console.log(token);
         if (token == null) {
             navigate('/login');
         }
@@ -83,10 +92,12 @@ function Profile() {
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);
-        console.log(files);
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
+        reader.onload = () => {
+            setImage(reader.result?.toString() ?? '');
+        };
     }
 
     function handleSubmit(e) {
@@ -113,9 +124,11 @@ function Profile() {
             <StyledTitle>Modifier la photo de profil</StyledTitle>
             <TitleUnderline number='1'></TitleUnderline>
             <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
+            { image !== '' && <img src={image} alt="" /> }
             <StyledTitle>Modifier le nom d'utilisateur</StyledTitle>
             <TitleUnderline number='2'></TitleUnderline>
             <StyledInput type="text" placeholder="Nouveau nom d'utilisateur"  value={username} onChange={(e) => setUsername(e.target.value)}/> <br />
+            <p>(25 caractères max.)</p>
             <StyledBtn type="submit" value="Enregistrer les modifications"/>
         </ProfileBox>
     );

@@ -42,6 +42,7 @@ exports.updatePost = (req, res, next) => {
         ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${file.filename}`
     } : {...req.body};
+    console.log(postObject);
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
@@ -51,20 +52,20 @@ exports.updatePost = (req, res, next) => {
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
         } 
-        if (!file) {
-            sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
-            db.query(sql, [postObject.textpost, req.params.id], (err, result) => {
-                if (err) throw err;
-                res.status(201).json({ message: 'Post modifié !', action: 1 })
-            })
-        }
-        if (!file && postObject.textpost == null) {
+        // if (!file) {
+        //     sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
+        //     db.query(sql, [postObject.textpost, req.params.id], (err, resp) => {
+        //         if (err) throw err;
+        //         res.status(201).json({ message: 'Post modifié !', action: 1 })
+        //     })
+        // }
+        if (!file && postObject.textpost == '') {
             res.status(400).json({ message: 'Il faut au moins une image ou du texte pour modifier un post', action: 0 });
         } else {
             const filename = result[0].imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 sql = `UPDATE posts SET textpost = ?, imageUrl = ? WHERE id = ?`;
-                db.query(sql, [postObject.textpost, postObject.imageUrl, req.params.id], (err, result) => {
+                db.query(sql, [postObject.textpost, postObject.imageUrl, req.params.id], (err, response) => {
                     if (err) throw err;
                     res.status(201).json({ message: 'Post modifié !', action: 1 })
                 });
@@ -110,7 +111,7 @@ exports.likePost = (req, res, next) => {
             res.status(404).json({ error: new Error('Post inexistant !') });
         } 
         sql = `SELECT * FROM likes WHERE userId = ? AND postId = ?`;
-        db.query(sql, [req.body.userId, result[0].id], (err, response) => {
+        db.query(sql, [req.body[0].userId, result[0].id], (err, response) => {
             if (err) throw err;
             if (response.length > 0) {
                 sql = `DELETE FROM likes WHERE id = ?`;
@@ -119,11 +120,11 @@ exports.likePost = (req, res, next) => {
                     res.status(201).json({ message: 'Post disliké !', action: 1});
                 })
             } else {
-            sql = `INSERT INTO likes (userId, postId) VALUES (?, ?)`;
-            db.query(sql, [req.body.userId ,result[0].id], (err, result) => {
-                if (err) throw err;
-                res.status(201).json({ message: 'Post liké !', action: 1});
-            })
+                sql = `INSERT INTO likes (userId, postId) VALUES (?, ?)`;
+                db.query(sql, [req.body[0].userId ,result[0].id], (err, result) => {
+                    if (err) throw err;
+                    res.status(201).json({ message: 'Post liké !', action: 1});
+                })
             }
         })
     })
@@ -183,7 +184,7 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.updateComment = (req, res, next) => {
-    const putObject = req.body;
+    const putObject = req.body[0];
     let sql = `SELECT * FROM comments WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;

@@ -3,7 +3,9 @@ import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
-import { BiSend, BiDotsVerticalRounded } from 'react-icons/bi';
+import { BiSend, BiDotsHorizontalRounded } from 'react-icons/bi';
+
+import Comments from '../Comments';
 
 const CommentsSection = styled.div `
     width: 95%;
@@ -12,26 +14,6 @@ const CommentsSection = styled.div `
     margin: 0 auto;
     border-radius: 15px;
     background-color: ${colors.backgroundLight};
-`;
-
-const Comment = styled.div `
-    width: 100%;
-    display: flex;
-    align-items: center;
-    border-radius: 15px;
-    background-color: ${colors.backgroundLight};
-    > div {
-        display: flex;
-        align-items: center;
-        .name {
-           font-size: 1.1rem;
-           margin-left: 10px; 
-        }
-    }
-    .comment {
-        font-size: 1rem;
-        margin: 10px 0 0 20px;
-    }
 `;
 
 const AddComment = styled.form `
@@ -78,7 +60,7 @@ const PictureWrapper = styled.div `
     }
 `;
 
-function Comments(props) {
+function CommentSection(props) {
     const userId = localStorage.getItem('userId');
     const profilePic = localStorage.getItem('pictureUrl');
     const token = Cookie.get('token');
@@ -98,12 +80,11 @@ function Comments(props) {
 
     function addComment(e) {
         e.preventDefault();
-        e.target.reset();
-        let commentData = [
-            {'userId': userId,
+        let commentData = [{
+            'userId': userId,
             'postId': props.id,
-            'comment': comment}
-        ];
+            'comment': comment
+        }];
         axios.post(`http://localhost:4200/api/posts/${props.id}/comment`, commentData, { 
             headers: {"Authorization" : `Bearer ${token}`}
         })
@@ -119,17 +100,29 @@ function Comments(props) {
                 {commentsList.map(data => (
                     // <>
                     // { props.id = data.postId &&
-                    <Comment key={data.id} id={data.id}>
-                        <div>
-                            <PictureWrapper>
-                                <img src={data.pictureUrl} alt="" />
-                            </PictureWrapper>
-                            <p className='name'>{data.username}</p>
-                        </div>
-                        <p className='comment'>{data.comment}</p>
-                    </Comment>
-                    // }
-                    // </>
+                    <Comments key={data.id} {...data}/>
+                    //     {/* <div>
+                    //         <PictureWrapper>
+                    //             <img src={data.pictureUrl} alt="" />
+                    //         </PictureWrapper>
+                    //         <p className='name'>{data.username}</p>
+                    //     </div>
+                    //     <p className='comment'>{data.comment}</p>
+                    //     { openMenu === false && 
+                    //         <OpenMenuBtn onClick={() => setOpenMenu(true)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
+                    //     }
+                    //     { openMenu === true && 
+                    //         <>
+                    //         <OpenMenuBtn onClick={() => setOpenMenu(false)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
+                    //         <StyledMenu>
+                    //             <MenuBtn >Modifier</MenuBtn>
+                    //             <MenuBtn >Supprimer</MenuBtn>
+                    //         </StyledMenu>
+                    //         </>
+                    //     }
+                    // </Comment> */}
+                    // {/* // }
+                    // // </> */}
                 ))}
                 <AddComment action='' onSubmit={(e) => addComment(e)}>
                     <PictureWrapper>
@@ -143,4 +136,4 @@ function Comments(props) {
     );
 }
 
-export default Comments;
+export default CommentSection;
