@@ -85,6 +85,7 @@ const StyledMenu = styled.div `
     top: 70px;
     right: 30px;
     box-shadow: 1px 1px 200px #DFDFDF;
+    z-index: 10;
 `;
 
 const MenuBtn = styled.button `
@@ -98,21 +99,24 @@ const MenuBtn = styled.button `
 `;
 
 const UpdatePostForm = styled.form `
-    margin: 30px 0 30px 40px;
-    input[type=text] {
-        width: 80%;
-        height: 40px;
+    margin: 30px 0 40px 40px;
+    position: relative;
+    textarea {
+        width: 94%;
         margin-bottom: 20px;
         padding: 20px;
         border-radius: 20px;
         border: none;
         outline: none;
         background-color: ${colors.backgroundLight};
+        color: ${colors.tertiary};
+        z-index: 0;
     }
     input[type="file"] {
         visibility: hidden;
     }
     label {
+        width: 200px;
         margin: 5px 0;
         color: ${colors.primary};
         font-size: 0.9rem;
@@ -123,6 +127,9 @@ const UpdatePostForm = styled.form `
         gap 10px;
     }
     input[type=submit] {
+        position: absolute;
+        left: 0px; 
+        top 225px;
         width: 140px;
         height: 40px;
         border-radius: 20px;
@@ -136,6 +143,9 @@ const UpdatePostForm = styled.form `
         }
     }
     button {
+        position: absolute;
+        left: 150px; 
+        top 235px;
         margin-left: 10px;
         color: ${colors.primary};
         background-color: ${colors.backgroundWhite};
@@ -262,16 +272,14 @@ function Post(props) {
                 </div>
             </div>
             { updateOn ? (
-                <>
                 <UpdatePostForm action='' onSubmit={() => updatePost(props.id)}>
-                    <input type="text" placeholder='Modifiez votre post...' value={textpost} onChange={(e) => setTextpost(e.target.value)}/>
+                    <textarea type="text" rows='5' placeholder='Modifiez votre post...' value={textpost} onChange={(e) => setTextpost(e.target.value)}></textarea>
                     <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
                     <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
                     { image !== '' && <img src={image} alt="" /> }
                     <input type="submit" value='Mettre à jour'/>
                     <button onClick={() => setUpdateOn(false)}>Annuler</button>
                 </UpdatePostForm>
-                </>
             ) : (
                 <p className='textpost'>{props.textpost}</p>
             )}

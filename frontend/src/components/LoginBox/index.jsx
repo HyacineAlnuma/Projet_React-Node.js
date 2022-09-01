@@ -39,6 +39,7 @@ const StyledInput = styled.input `
     height: 60px;
     padding-left: 50px;
     font-size: 1.2rem;
+    color: ${colors.tertiary};
     border: 0;
     outline: 0;
     border-bottom: 1px solid ${colors.tertiary};
@@ -77,7 +78,7 @@ const EmailWrapper = styled.div `
 const KeyWrapper = styled.div `
     position: absolute;
     left: 120px;
-    top: 264px;
+    top: 265px;
 `;
 
 function LoginBox() {
@@ -108,7 +109,7 @@ function LoginBox() {
     return (
         <FormBox>
             <StyledTitle>Se connecter</StyledTitle>
-            <EmailWrapper><FiMail /></EmailWrapper>
+            <EmailWrapper><FiMail size={23}/></EmailWrapper>
             <KeyWrapper><BiKey size={27}/></KeyWrapper>
             <StyledForm action="" onSubmit={handleSubmit} >
                 <StyledInput type="email" placeholder='Adresse email' value={email} onChange={(e) => {setEmail(e.target.value)}} />

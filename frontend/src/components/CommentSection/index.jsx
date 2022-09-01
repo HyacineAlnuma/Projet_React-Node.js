@@ -23,6 +23,7 @@ const AddComment = styled.form `
     input[type=text] {
         width: 83%;
         height: 50px;
+        color: ${colors.tertiary};
         padding: 0 10px 0 10px;
         outline: 0;
         margin: 6px 0 0 5px;

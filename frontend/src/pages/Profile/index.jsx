@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
+import { BiDownload } from 'react-icons/bi';
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
 
@@ -17,9 +18,26 @@ const ProfileBox = styled.form `
         color: #A9A9A9;
     }
     img {
-        width: 100px;
+        width: 200px;
         height: auto;
     }
+    label {
+        color: ${colors.primary};
+        font-size: 1.1rem;
+        width: 250px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap 10px;
+    }
+    input[type="file"] {
+        visibility: hidden;
+    }
+`;
+
+const TitleWrapper = styled.div `
+    position: relative;
 `;
 
 const StyledTitle = styled.h2 `
@@ -27,22 +45,23 @@ const StyledTitle = styled.h2 `
     font-size: 2rem;
     font-weight: 600;
     position: relative;
-    z-index: 1;
+    z-index: 10;
 `;
 
 const TitleUnderline = styled.div `
     height: 13px;
     background-color:${colors.secondary};
     position: absolute;
-    left: 474px;
-    z-index: 0;
     ${(props) => props.number === '1' &&
         `width: 430px; 
+        left: 474px;
         top: 194px;`
     };
     ${(props) => props.number === '2' &&
         `width: 463px; 
-        top: 359px;`
+        top: 22px;
+        left: -5px;
+        z-index: 0;`
     };
 `;
 
@@ -109,24 +128,28 @@ function Profile() {
         putData.append('username', username);
         localStorage.removeItem('pictureUrl');
         localStorage.removeItem('username');
-        axios.put('http://localhost:4200/api/auth/modify', putData)
-            .then(res => {
-                localStorage.setItem('pictureUrl', res.data.pictureUrl);
-                localStorage.setItem('username', res.data.username);
-                console.log(res);
-                navigate('/home')
-            })
-            .catch(err => console.log(err))
+        if (username.length > 25) {
+            window.alert("Le nom d'utilisateur ne doit pas dépacer 25 caractères");
+        } else {
+            axios.put('http://localhost:4200/api/auth/modify', putData)
+                .then(res => {
+                    localStorage.setItem('pictureUrl', res.data.pictureUrl);
+                    localStorage.setItem('username', res.data.username);
+                    console.log(res);
+                    navigate('/home')
+                })
+                .catch(err => console.log(err))
+        }
     }
 
     return (
         <ProfileBox action='' onSubmit={handleSubmit}>
             <StyledTitle>Modifier la photo de profil</StyledTitle>
             <TitleUnderline number='1'></TitleUnderline>
+            <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
             <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
             { image !== '' && <img src={image} alt="" /> }
-            <StyledTitle>Modifier le nom d'utilisateur</StyledTitle>
-            <TitleUnderline number='2'></TitleUnderline>
+            <TitleWrapper><StyledTitle>Modifier le nom d'utilisateur</StyledTitle><TitleUnderline number='2'></TitleUnderline></TitleWrapper>
             <StyledInput type="text" placeholder="Nouveau nom d'utilisateur"  value={username} onChange={(e) => setUsername(e.target.value)}/> <br />
             <p>(25 caractères max.)</p>
             <StyledBtn type="submit" value="Enregistrer les modifications"/>

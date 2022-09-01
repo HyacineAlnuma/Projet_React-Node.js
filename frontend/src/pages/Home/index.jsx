@@ -76,6 +76,7 @@ const InputWrapper = styled.div `
         position: absolute;
     }
     label {
+        width: 200px;
         margin: 5px 0 0 140px;
         color: ${colors.primary};
         font-size: 0.9rem;

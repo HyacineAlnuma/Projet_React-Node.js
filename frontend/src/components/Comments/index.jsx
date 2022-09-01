@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
-import { BiDotsHorizontalRounded, BiDownload } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiSend } from 'react-icons/bi';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
 
 const Comment = styled.div `
@@ -15,14 +16,15 @@ const Comment = styled.div `
     > div {
         display: flex;
         align-items: center;
-        .name {
+    }
+    .comment_name {
         font-size: 1.1rem;
-        margin-left: 10px; 
-        }
+        font-weight: bold;
+        margin: 32px 15px 0 25px; 
     }
     .comment {
         font-size: 1rem;
-        margin: 0 50px 0 15px;
+        margin: 0 50px 0px 15px;
         padding-top: 33px;
         overflow: auto;
         width: 60%;
@@ -53,10 +55,58 @@ const PictureWrapper = styled.div `
     }
 `;
 
+const UpdateCommentForm = styled.form `
+    width: 90%;
+    display: flex;
+    align-items: center;
+    margin: 20px 0 0 15px;
+    input[type=text] {
+        width: 85%;
+        height: 50px;
+        padding: 15px;
+        border: none;
+        outline: none;
+        border-radius: 15px 0 0 15px;
+        color: ${colors.tertiary};
+    }
+    .sendbtn {
+        height: 50px;
+        width: 7%;
+        padding-top: 4px;
+        margin-left: 6px;
+        border-radius: 0 13px 13px 0;
+        border: 0;
+        outline: 0;
+        background-color: ${colors.secondary};
+        color: ${colors.primary};
+        transition: 150ms;
+        &:hover {
+            background-color: ${colors.primary};
+            color: ${colors.backgroundWhite};
+            cursor: pointer;
+        }
+    }
+    .cancelbtn {
+        position: absolute;
+        right: 140px;
+        background-color: ${colors.backgroundWhite};
+        color: ${colors.tertiary};
+        padding: 6px 6px 6px 7px;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        &:hover {
+            background-color: #DCDCDC;
+            cursor: pointer;
+        }
+    }
+`;
+
 const OpenMenuBtn = styled.button `
     position: absolute;
     right: 15px;
-    top: 13px;
+    top: 25px;
     width: 40px;
     height: 40px;
     background-color: ${colors.backgroundLight};
@@ -128,21 +178,19 @@ function Comments(props) {
             <div>
                 <PictureWrapper>
                     <img src={props.pictureUrl} alt="" />
-                </PictureWrapper>
-                <p className='name'>{props.username}</p>
+                </PictureWrapper>       
             </div>
             { updateOn ? (
-                <>
-                <form action='' onSubmit={() => updateComment(props.id)}>
-                <input type="text" placeholder='Modifiez votre post...' value={comment} onChange={(e) => setComment(e.target.value)}/>
-                <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
-                <input type="submit"/>
-                
-                </form>
-                <button onClick={() => setUpdateOn(false)}>Annuler</button>
-                </>
+                <UpdateCommentForm action='' onSubmit={() => updateComment(props.id)}>
+                    <input type="text" placeholder='Modifiez votre commentaire...' value={comment} onChange={(e) => setComment(e.target.value)}/>
+                    <button className='sendbtn' type="submit"><BiSend size={30}/></button>
+                    <button className='cancelbtn' onClick={() => setUpdateOn(false)}><AiFillCloseCircle/></button>
+                </UpdateCommentForm>
             ) : (
+                <>
+                <p className='comment_name'>{props.username}</p>
                 <p className='comment'>{props.comment}</p>
+                </>
             )}
             {/* { openMenu === false && 
                 <OpenMenuBtn onClick={() => setOpenMenu(true)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>

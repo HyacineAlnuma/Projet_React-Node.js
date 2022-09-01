@@ -37,6 +37,7 @@ const StyledForm = styled.form `
 const StyledInput = styled.input `
     width: 60%;
     height: 60px;
+    color: ${colors.tertiary};
     padding-left: 50px;
     font-size: 1.2rem;
     border: 0;
@@ -52,6 +53,7 @@ const StyledInput = styled.input `
 const UsernameInput = styled.input `
     width: 60%;
     height: 60px;
+    color: ${colors.tertiary};
     padding-left: 10px;
     font-size: 1.2rem;
     border: 0;
