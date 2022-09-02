@@ -106,6 +106,7 @@ const UpdatePostForm = styled.form `
         margin-bottom: 20px;
         padding: 20px;
         border-radius: 20px;
+        resize: none;
         border: none;
         outline: none;
         background-color: ${colors.backgroundLight};
@@ -136,6 +137,7 @@ const UpdatePostForm = styled.form `
         background-color: ${colors.secondary};
         color: ${colors.primary};
         border: none;
+        transition: 150ms;
         &:hover {
             background-color: ${colors.primary};
             color: ${colors.backgroundWhite};
@@ -186,14 +188,13 @@ const CommentSeparation = styled.div `
 
 
 function Post(props) {
-    const [openMenu, setOpenMenu] = useState(false);
     const [updateOn, setUpdateOn] = useState(false);
     const [file, setFile] = useState();
-    const [image, setImage] = useState('');
-    const [textpost, setTextpost] = useState('');
+    const [image, setImage] = useState(props.imageUrl);
+    const [textpost, setTextpost] = useState(props.textpost);
     const token = Cookie.get('token');
     const userId = localStorage.getItem('userId');
-   const menuRef = useRef();
+    const menuRef = useRef();
     
 
     function updatePost(data) {
@@ -210,8 +211,9 @@ function Post(props) {
             .catch(err => console.log(err))
     }
 
-    function imageHandler(e) {
+    function imageHandle(e) {
         let files = Array.from(e.target.files);
+        console.log(files);
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
@@ -243,18 +245,19 @@ function Post(props) {
             .catch(err => console.log(err))
     }
 
-    useEffect(() => {
-        let handler = (e) => {
-            if (!menuRef.current.contains(e.target)) {
-                setOpenMenu(false);
-            }
-        };
-        document.addEventListener("click", handler);
+    // useEffect(() => {
+    //     let handler = (e) => {
+    //         if (!menuRef.current.contains(e.target)) {
+    //             setOpenMenu(false);
+    //         }
+    //     };
+    //     document.addEventListener("click", handler);
 
-        return () => {
-            document.removeEventListener("click", handler);
-        }
-    })
+    //     return () => {
+    //         document.removeEventListener("click", handler);
+    //     }
+    // })
+    const [openMenu, toggle] = useClickOutside(menuRef);
 
     return (
         <PostBox>
@@ -264,7 +267,7 @@ function Post(props) {
                 </PictureWrapper>
                 <p className='name'>{props.username}</p>
                 <div ref={menuRef}>
-                    <OpenMenuBtn  onClick={() => setOpenMenu(!openMenu)}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
+                    <OpenMenuBtn  onClick={() => toggle()}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
                     <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
                         <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
                         <MenuBtn onClick={() => deletePost(props.id)}>Supprimer</MenuBtn>
@@ -273,17 +276,19 @@ function Post(props) {
             </div>
             { updateOn ? (
                 <UpdatePostForm action='' onSubmit={() => updatePost(props.id)}>
-                    <textarea type="text" rows='5' placeholder='Modifiez votre post...' value={textpost} onChange={(e) => setTextpost(e.target.value)}></textarea>
-                    <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
-                    <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
+                    <textarea type="text" rows='5' onChange={(e) => setTextpost(e.target.value)}>{props.textpost}</textarea>
+                    <label htmlFor="file"><BiDownload size={22}/> Importer une image</label>
+                    <input id="file" type="file" onChange={(e) => {imageHandle(e)}}/>
                     { image !== '' && <img src={image} alt="" /> }
                     <input type="submit" value='Mettre à jour'/>
                     <button onClick={() => setUpdateOn(false)}>Annuler</button>
                 </UpdatePostForm>
             ) : (
+                <>
                 <p className='textpost'>{props.textpost}</p>
+                <img src={props.imageUrl} alt="" />
+                </>
             )}
-            <img src={props.imageUrl} alt="" />
             <IconsWrapper>
                 <button onClick={() => likePost(props.id)}><BiHeart size={24}/><p>{props.likes}</p></button>
                 <BiCommentDetail size={24}/><p>{props.commentsNumber}</p>

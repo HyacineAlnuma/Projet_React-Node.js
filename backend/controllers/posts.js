@@ -52,24 +52,25 @@ exports.updatePost = (req, res, next) => {
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
         } 
-        // if (!file) {
-        //     sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
-        //     db.query(sql, [postObject.textpost, req.params.id], (err, resp) => {
-        //         if (err) throw err;
-        //         res.status(201).json({ message: 'Post modifié !', action: 1 })
-        //     })
-        // }
         if (!file && postObject.textpost == '') {
             res.status(400).json({ message: 'Il faut au moins une image ou du texte pour modifier un post', action: 0 });
         } else {
-            const filename = result[0].imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                sql = `UPDATE posts SET textpost = ?, imageUrl = ? WHERE id = ?`;
-                db.query(sql, [postObject.textpost, postObject.imageUrl, req.params.id], (err, response) => {
+            if (!file) {
+                sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
+                db.query(sql, [postObject.textpost, req.params.id], (err, resp) => {
                     if (err) throw err;
                     res.status(201).json({ message: 'Post modifié !', action: 1 })
+                })
+            } else {
+                const filename = result[0].imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    sql = `UPDATE posts SET textpost = ?, imageUrl = ? WHERE id = ?`;
+                    db.query(sql, [postObject.textpost, postObject.imageUrl, req.params.id], (err, response) => {
+                        if (err) throw err;
+                        res.status(201).json({ message: 'Post modifié !', action: 1 })
+                    });
                 });
-            });
+            }
         }
     });
 };

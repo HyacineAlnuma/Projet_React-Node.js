@@ -145,7 +145,7 @@ const MenuBtn = styled.button `
 function Comments(props) {
     const [openMenu, setOpenMenu] = useState(false);
     const [updateOn, setUpdateOn] = useState(false);
-    const [comment, setComment] = useState('');
+    const [comment, setComment] = useState(props.comment);
     const token = Cookie.get('token');
     const userId = localStorage.getItem('userId');
 
@@ -182,7 +182,7 @@ function Comments(props) {
             </div>
             { updateOn ? (
                 <UpdateCommentForm action='' onSubmit={() => updateComment(props.id)}>
-                    <input type="text" placeholder='Modifiez votre commentaire...' value={comment} onChange={(e) => setComment(e.target.value)}/>
+                    <input type="text" value={comment} onChange={(e) => setComment(e.target.value)}/>
                     <button className='sendbtn' type="submit"><BiSend size={30}/></button>
                     <button className='cancelbtn' onClick={() => setUpdateOn(false)}><AiFillCloseCircle/></button>
                 </UpdateCommentForm>

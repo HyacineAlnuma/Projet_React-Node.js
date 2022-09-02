@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export function useClickOutside() {
-    const [openMenu, setOpenMenu] = useState({})
-    const menuRef = useRef();
+export function useClickOutside(menuRef) {
+    const [openMenu, setOpenMenu] = useState(false);
 
     useEffect(() => {
         let handler = (e) => {
@@ -16,4 +15,9 @@ export function useClickOutside() {
             document.removeEventListener("click", handler);
         }
     })
+    const toggle = useCallback(() => {
+        console.log(openMenu);
+        setOpenMenu(!openMenu);
+    }, [])
+    return([openMenu, toggle]);
 }
