@@ -12,27 +12,11 @@ import Profile from './pages/Profile';
 
 function App() {
 
-    //const token = Cookie.get('token');
-    // console.log(token);
-
     return (
         <BrowserRouter>
             <GlobalStyle />
             <Header />
             <Routes>
-                {/* {!token && (
-                    <>
-                    <Route path="/signup" element={<SignupBox  />}/>
-                    <Route path="/login" element={<LoginBox />}/> 
-                    </>
-                )}
-                {token && (
-                    <>
-                    <Route path="/home" element={<Home />}/> 
-                    <Route path="/profile" element={<Profile />}/>
-                    </>
-                )}
-                <Route path='*' element={<Navigate to={token ? "/home" : "/login"}/>}/> */}
                 <Route path="/signup" element={<SignupBox  />}/>
                 <Route path="/login" element={<LoginBox />}/> 
                 <Route path="/home" element={<Home />}/> 

@@ -16,7 +16,6 @@ export function useClickOutside(menuRef) {
         }
     })
     const toggle = useCallback(() => {
-        console.log(openMenu);
         setOpenMenu(!openMenu);
     }, [])
     return([openMenu, toggle]);

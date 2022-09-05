@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
-import { BiDotsHorizontalRounded, BiSend } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiSend, BiWindows } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
+import { useClickOutside } from '../../utils/hooks/useClickOutside';
 
 const Comment = styled.div `
     width: 100%;
@@ -143,9 +144,11 @@ const MenuBtn = styled.button `
 `;
 
 function Comments(props) {
-    const [openMenu, setOpenMenu] = useState(false);
     const [updateOn, setUpdateOn] = useState(false);
     const [comment, setComment] = useState(props.comment);
+    const menuRef = useRef();
+    const [openMenu, toggle] = useClickOutside(menuRef);
+
     const token = Cookie.get('token');
     const userId = localStorage.getItem('userId');
 
@@ -156,7 +159,10 @@ function Comments(props) {
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     function updateComment(data) {
@@ -170,7 +176,10 @@ function Comments(props) {
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     return(
@@ -192,23 +201,13 @@ function Comments(props) {
                 <p className='comment'>{props.comment}</p>
                 </>
             )}
-            {/* { openMenu === false && 
-                <OpenMenuBtn onClick={() => setOpenMenu(true)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
-            }
-            { openMenu === true && 
-                <>
-                <OpenMenuBtn onClick={() => setOpenMenu(false)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
-                <StyledMenu>
-                    <MenuBtn onClick={() => setUpdateOn(true)}>Modifier</MenuBtn>
+            <div ref={menuRef}>
+                <OpenMenuBtn onClick={() => toggle()}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>
+                <StyledMenu className={`comment_menu ${openMenu? 'active' : 'inactive'}`}>
+                    <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
                     <MenuBtn onClick={() => deleteComment(props.id)}>Supprimer</MenuBtn>
                 </StyledMenu>
-                </>
-            } */}
-            <OpenMenuBtn onClick={() => setOpenMenu(!openMenu)}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>
-            <StyledMenu className={`comment_menu ${openMenu? 'active' : 'inactive'}`}>
-                <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
-                <MenuBtn onClick={() => deleteComment(props.id)}>Supprimer</MenuBtn>
-            </StyledMenu>
+            </div>
         </Comment>
     );
 }

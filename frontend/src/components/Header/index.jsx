@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import logo from '../../assets/icon-left-font.png';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
 import { FiMenu } from "react-icons/fi";
 import { CgClose } from "react-icons/cg";
+import { useClickOutside } from '../../utils/hooks/useClickOutside';
 
 const HeaderStyle = styled.header`
     display: flex;
@@ -142,7 +143,9 @@ const IconWrapper = styled.div `
 
 function Header() {
     const location = useLocation();
-    const [openMenu, setOpenMenu] = useState(false);
+    const menuRef = useRef();
+    const [openMenu, toggle] = useClickOutside(menuRef);
+
     const profilePic = localStorage.getItem('pictureUrl');
     const username = localStorage.getItem('username');
 
@@ -169,23 +172,23 @@ function Header() {
                     </>
                 }   
                 { (location.pathname === '/home' || location.pathname === '/profile')  &&
-                    <>
-                    <OpenMenuBtn onClick={() => setOpenMenu(!openMenu)} state={openMenu}>
-                        <ImageWrapper>
-                                <img src={profilePic} alt="" />
-                        </ImageWrapper>
-                        <p>{username}</p>
-                        <IconWrapper>
-                            {openMenu ? <CgClose size={30}/> : <FiMenu size={30}/>}
-                        </IconWrapper>                 
-                    </OpenMenuBtn>
-                    <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
-                        <MenuBtn to='/profile'>Modifier le profil</MenuBtn>
-                        <MenuBtn to="/login" onClick={Logout}>
-                            Se déconnecter
-                        </MenuBtn>
-                    </StyledMenu>
-                    </>
+                    <div ref={menuRef}>
+                        <OpenMenuBtn onClick={() => toggle()} state={openMenu}>
+                            <ImageWrapper>
+                                    <img src={profilePic} alt="" />
+                            </ImageWrapper>
+                            <p>{username}</p>
+                            <IconWrapper>
+                                {openMenu ? <CgClose size={30}/> : <FiMenu size={30}/>}
+                            </IconWrapper>                 
+                        </OpenMenuBtn>
+                        <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
+                            <MenuBtn to='/profile'>Modifier le profil</MenuBtn>
+                            <MenuBtn to="/login" onClick={Logout}>
+                                Se déconnecter
+                            </MenuBtn>
+                        </StyledMenu>
+                    </div>
                 }
             </StyledNav>
         </HeaderStyle>

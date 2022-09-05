@@ -27,7 +27,7 @@ exports.createPost = (req, res, next) => {
     if (!file && postObject.textpost == null) {
         res.status(400).json({ message: 'Il faut au moins une image ou du texte pour créer un post', action: 0 });
     } else {
-        let sql = `INSERT INTO posts (userId, textpost, imageUrl, likes) VALUES (?, ?, ?, '0')`;
+        let sql = `INSERT INTO posts (userId, textpost, imageUrl) VALUES (?, ?, ?)`;
         db.query(sql, [postObject.userId, postObject.textpost, postObject.imageUrl], (err, result) => {
             if (err) throw err;
             res.status(201).json({ message: 'Post enregistré !', action: 1 })
@@ -50,11 +50,11 @@ exports.updatePost = (req, res, next) => {
             res.status(404).json({ message: 'Post inexistant !', action: 0 });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
-        } 
-        if (!file && postObject.textpost == '') {
-            res.status(400).json({ message: 'Il faut au moins une image ou du texte pour modifier un post', action: 0 });
+            res.status(403).json({ message: "Vous ne pouvez pas modifier un post d'un autre utilisateur", action: 0 });
         } else {
+            if (!file && postObject.textpost == '') {
+                res.status(400).json({ message: 'Il faut au moins une image ou du texte pour modifier un post', action: 0 });
+            }
             if (!file) {
                 sql = `UPDATE posts SET textpost = ? WHERE id = ?`;
                 db.query(sql, [postObject.textpost, req.params.id], (err, resp) => {
@@ -83,23 +83,24 @@ exports.deletePost = (req, res, next) => {
             res.status(404).json({ error: new Error('Post inexistant !') });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
-        } 
-        if (result[0].imageUrl !== null && result[0].imageUrl != "undefined") {
-            const filename = result[0].imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
+            res.status(403).json({ message: "Vous ne pouvez pas supprimer un post d'un autre utilisateur", action: 0 });
+        } else {
+            if (result[0].imageUrl !== null && result[0].imageUrl != "undefined") {
+                const filename = result[0].imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    sql = `DELETE FROM posts WHERE id = ?`;
+                    db.query(sql, [req.params.id], (err, result) => {
+                        if (err) throw err;
+                        res.status(201).json({ message: 'Post supprimé !', action: 1 })
+                    });
+                });
+            } else {
                 sql = `DELETE FROM posts WHERE id = ?`;
                 db.query(sql, [req.params.id], (err, result) => {
                     if (err) throw err;
                     res.status(201).json({ message: 'Post supprimé !', action: 1 })
                 });
-            });
-        } else {
-            sql = `DELETE FROM posts WHERE id = ?`;
-            db.query(sql, [req.params.id], (err, result) => {
-                if (err) throw err;
-                res.status(201).json({ message: 'Post supprimé !', action: 1 })
-            });
+            }
         }
     });
 };
@@ -139,9 +140,16 @@ exports.getPostComments = (req, res, next) => {
     })
 }
 
+exports.getPostLikes = (req, res, next) => {
+    let sql = 'SELECT * FROM likes WHERE postId = ?';
+    db.query(sql, [req.params.id], (err, result) => {
+        if (err) throw err;
+        res.status(201).json({ result });
+    })
+}
+
 exports.commentPost = (req, res, next) => {
     const commentObject = req.body[0];
-    console.log(req.body);
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
@@ -167,9 +175,9 @@ exports.deleteComment = (req, res, next) => {
         if (err) throw err;
         if (result.lenght < 1) {
             res.status(404).json({ error: new Error('Commentaire inexistant !') });
-        } 
+        }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ message: 'Requête non authorisée !', action: 0 });
+            res.status(403).json({ message: "Vous ne pouvez pas supprimer un commentaire d'un autre utilisateur", action: 0 });
         } else {
             sql = `DELETE FROM comments WHERE id = ?`;
             db.query(sql, [req.params.id], (err, response) => {
@@ -193,7 +201,7 @@ exports.updateComment = (req, res, next) => {
             res.status(404).json({ error: new Error('Commentaire inexistant !') });
         } 
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
-            res.status(403).json({ error: 'Requête non authorisée !', action: 0});
+            res.status(403).json({ message: "Vous ne pouvez pas modifier un commentaire d'un autre utilisateur", action: 0});
         } else {
             sql = `UPDATE comments SET comment = ? WHERE id = ?`;
             db.query(sql, [putObject.comment, req.params.id], (err, response) => {

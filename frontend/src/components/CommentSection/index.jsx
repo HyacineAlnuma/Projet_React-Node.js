@@ -99,31 +99,7 @@ function CommentSection(props) {
         <div>
             <CommentsSection>
                 {commentsList.map(data => (
-                    // <>
-                    // { props.id = data.postId &&
                     <Comments key={data.id} {...data}/>
-                    //     {/* <div>
-                    //         <PictureWrapper>
-                    //             <img src={data.pictureUrl} alt="" />
-                    //         </PictureWrapper>
-                    //         <p className='name'>{data.username}</p>
-                    //     </div>
-                    //     <p className='comment'>{data.comment}</p>
-                    //     { openMenu === false && 
-                    //         <OpenMenuBtn onClick={() => setOpenMenu(true)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
-                    //     }
-                    //     { openMenu === true && 
-                    //         <>
-                    //         <OpenMenuBtn onClick={() => setOpenMenu(false)}><BiDotsHorizontalRounded size={30}/></OpenMenuBtn>
-                    //         <StyledMenu>
-                    //             <MenuBtn >Modifier</MenuBtn>
-                    //             <MenuBtn >Supprimer</MenuBtn>
-                    //         </StyledMenu>
-                    //         </>
-                    //     }
-                    // </Comment> */}
-                    // {/* // }
-                    // // </> */}
                 ))}
                 <AddComment action='' onSubmit={(e) => addComment(e)}>
                     <PictureWrapper>

@@ -4,7 +4,8 @@ import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
-import { BiHeart, BiCommentDetail, BiDotsVerticalRounded, BiDownload } from 'react-icons/bi';
+import { BiCommentDetail, BiDotsVerticalRounded, BiDownload } from 'react-icons/bi';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 import CommentSection from '../CommentSection';
 
@@ -192,10 +193,31 @@ function Post(props) {
     const [file, setFile] = useState();
     const [image, setImage] = useState(props.imageUrl);
     const [textpost, setTextpost] = useState(props.textpost);
+    const [likesList, setLikesList] = useState([]);
+    const menuRef = useRef();
+    const [openMenu, toggle] = useClickOutside(menuRef);
+    
     const token = Cookie.get('token');
     const userId = localStorage.getItem('userId');
-    const menuRef = useRef();
-    
+
+    useEffect(() => {
+        axios.get(`http://localhost:4200/api/posts/${props.id}/likes`,{ 
+            headers: {"Authorization" : `Bearer ${token}`} 
+        })
+            .then(res => {
+                setLikesList(res.data.result);
+
+            })
+            .catch(err => console.log(err));
+    }, [likesList]);
+
+    let likedPost = false;
+    for(let i = 0; i < likesList.length; i++) {
+        if (likesList[i].userId == userId) {
+            likedPost = true;
+            break;
+        }
+    }
 
     function updatePost(data) {
         const postData = new FormData();
@@ -208,7 +230,10 @@ function Post(props) {
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     function imageHandle(e) {
@@ -229,7 +254,10 @@ function Post(props) {
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     function likePost(props) {
@@ -244,20 +272,6 @@ function Post(props) {
             })
             .catch(err => console.log(err))
     }
-
-    // useEffect(() => {
-    //     let handler = (e) => {
-    //         if (!menuRef.current.contains(e.target)) {
-    //             setOpenMenu(false);
-    //         }
-    //     };
-    //     document.addEventListener("click", handler);
-
-    //     return () => {
-    //         document.removeEventListener("click", handler);
-    //     }
-    // })
-    const [openMenu, toggle] = useClickOutside(menuRef);
 
     return (
         <PostBox>
@@ -290,7 +304,11 @@ function Post(props) {
                 </>
             )}
             <IconsWrapper>
-                <button onClick={() => likePost(props.id)}><BiHeart size={24}/><p>{props.likes}</p></button>
+                {likedPost ? (
+                    <button onClick={() => likePost(props.id)}><AiFillHeart size={24}/><p>{likesList.length}</p></button> 
+                ) : (
+                    <button onClick={() => likePost(props.id)}><AiOutlineHeart size={24}/><p>{likesList.length}</p></button>
+                )}
                 <BiCommentDetail size={24}/><p>{props.commentsNumber}</p>
             </IconsWrapper>
             <CommentSeparation></CommentSeparation>
