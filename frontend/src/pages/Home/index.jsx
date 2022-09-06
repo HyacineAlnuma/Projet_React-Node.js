@@ -14,6 +14,12 @@ const HomeBox = styled.div `
     display: flex:
     flex-direction: column;
     color: ${colors.tertiary};
+    @media all and (max-width: 1275px) {
+        width: 80%;
+    }
+    @media all and (max-width: 680px) {
+        width: 100%;
+    }
 `;
 
 const StyledTitle = styled.h2 `
@@ -31,8 +37,14 @@ const TitleUnderline = styled.div `
     background-color:${colors.secondary};
     position: absolute;
     top: 194px;
-    left: 474px;
+    left: 24.8%;
     z-index: 0;
+    @media all and (max-width: 1275px) {
+        left: 9.8%;
+    }
+    @media all and (max-width: 680px) {
+        left: 0;
+    }
 `;
 
 const CreatePost = styled.form `
@@ -56,17 +68,23 @@ const ImageWrapper = styled.div `
         max-height: 100%;
         width: auto;
     }
+    @media all and (max-width: 680px) {
+        width: 0;
+    }
 `;
 
 const InputWrapper = styled.div `
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    input[type="text"] {
+    position: relative;
+    textarea {
         height: 50px;
-        width: 710px;
-        margin: 15px 0 0 140px;
+        max-width: 72%;
+        margin: 15px 100px 0 140px;
         border: none;
+        resize: none;
         &:focus {
             outline: none;
         }
@@ -91,6 +109,21 @@ const InputWrapper = styled.div `
         height: auto;
         margin-left: 140px;
     }
+    @media all and (max-width: 680px) {
+        label {
+            position: absolute;
+            left: -120px;
+            bottom: -30px;
+            p {
+                font-size: 0.9rem;
+            }
+        }
+        textarea {
+            width: 80%;
+            margin-left: 10px;
+            margin-top: 0;
+        }
+    }
 `;
 
 const SubmitBtn = styled.input `
@@ -109,7 +142,13 @@ const SubmitBtn = styled.input `
         color: ${colors.backgroundWhite};
         cursor: pointer;
     }
+    @media all and (max-width: 680px) {
+        width: 50px;
+        font-size: 0.9rem;
+    }
 `;
+
+
 
 function Home() {
     const [textpost, setTextpost] = useState('');
@@ -174,8 +213,8 @@ function Home() {
                     <img src={profilePic} alt="" />
                 </ImageWrapper>
                 <InputWrapper>
-                    <input type="text" placeholder='Écrivez ce qui vous passe par l’esprit...' value={textpost} onChange={(e) => setTextpost(e.target.value)}/>
-                    <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
+                    <textarea type='text' placeholder='Écrivez ce qui vous passe par l’esprit...' value={textpost} onChange={(e) => setTextpost(e.target.value)}></textarea>
+                    <label htmlFor="files"><BiDownload size={22}/><p>Importer une image</p></label>
                     <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
                     { image !== '' && <img src={image} alt="" /> }
                 </InputWrapper>

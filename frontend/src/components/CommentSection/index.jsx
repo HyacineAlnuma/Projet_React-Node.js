@@ -32,7 +32,7 @@ const AddComment = styled.form `
     }
     button {
         height: 42px;
-        width: 7%;
+        width: 6%;
         padding-top: 4px;
         margin-top: 6px;
         border-radius: 0 13px 13px 0;
@@ -47,6 +47,15 @@ const AddComment = styled.form `
             cursor: pointer;
         }
     }
+    @media all and (max-width: 680px) {
+        margin: 10px;
+        input[type=text] {
+            max-width: 85%;
+        }
+        button {
+            width: 10%
+        }
+    }
 `;
 
 const PictureWrapper = styled.div `
@@ -58,6 +67,11 @@ const PictureWrapper = styled.div `
     img {
         max-height: 100%;
         width: auto;
+    }
+    @media all and (max-width: 680px) {
+        width: 0;
+        overflow: hidden;
+        margin: 0;
     }
 `;
 

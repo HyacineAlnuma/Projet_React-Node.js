@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
 import { BiKey, BiDownload } from "react-icons/bi";
+import { BsFillPersonFill } from "react-icons/bs";
 import setCookie from '../../utils/hooks/SetCookie';
 
 const FormBox = styled.div `
@@ -18,6 +19,9 @@ const FormBox = styled.div `
     border-radius: 16px;
     box-shadow: 1px 1px 200px #DFDFDF;
     position: relative;
+    @media all and (max-width: 540px) {
+        width: 100%;
+    }
 `;
 
 const StyledTitle = styled.h2 `
@@ -48,21 +52,13 @@ const StyledInput = styled.input `
         width: 75%;
         padding-left: 78px;
     }
-`;
-
-const UsernameInput = styled.input `
-    width: 60%;
-    height: 60px;
-    color: ${colors.tertiary};
-    padding-left: 10px;
-    font-size: 1.2rem;
-    border: 0;
-    outline: 0;
-    border-bottom: 1px solid ${colors.tertiary};
-    transition: 400ms ease-out;
-    &:focus {
-        width: 75%;
-        padding-left: 38px;
+    @media all and (max-width: 540px) {
+        width: 90%;
+        padding-left: 35px;
+        &:focus {
+            width: 90%;
+            padding-left: 35px;
+        }
     }
 `;
 
@@ -89,12 +85,27 @@ const EmailWrapper = styled.div `
     position: absolute;
     left: 120px;
     top: 132px;
+    @media all and (max-width: 540px) {
+        left: 60px;
+    }
 `;
 
 const KeyWrapper = styled.div `
     position: absolute;
     left: 120px;
     top: 229px;
+    @media all and (max-width: 540px) {
+        left: 60px;
+    }
+`;
+
+const PersonWrapper = styled.div `
+    position: absolute;
+    left: 120px;
+    top: 329px;
+    @media all and (max-width: 540px) {
+        left: 60px;
+    }
 `;
 
 const PictureTitle = styled.p `
@@ -173,10 +184,11 @@ function SignupBox() {
             <StyledTitle>Créer un compte</StyledTitle>
             <EmailWrapper><FiMail size={23}/></EmailWrapper>
             <KeyWrapper><BiKey size={27}/></KeyWrapper>
+            <PersonWrapper><BsFillPersonFill size={26}/></PersonWrapper>
             <StyledForm action="" onSubmit={handleSubmit}>
                 <StyledInput type="email" placeholder='Adresse email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
                 <StyledInput type="password" placeholder='Mot de passe' value={password} onChange={(e) => setPassword(e.target.value)} required/>
-                <UsernameInput type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required/>
+                <StyledInput type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required/>
                 <PictureTitle>Photo de profil</PictureTitle>
                 <PictureWrapper>
                     <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>

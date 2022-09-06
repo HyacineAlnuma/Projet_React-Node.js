@@ -10,8 +10,9 @@ import { useClickOutside } from '../../utils/hooks/useClickOutside';
 
 const HeaderStyle = styled.header`
     display: flex;
-    justify-content: space-between;
+    position: relative;
     align-items: center;
+    justify-content: space-between;
     height: 122px;
     background-color: ${colors.backgroundWhite};
 `;
@@ -19,11 +20,16 @@ const HeaderStyle = styled.header`
 const ImageStyle = styled.img`
     width: auto;
     height: 100px;
-    margin: 10px 60px;
+    margin: 10px 0 0 60px;
+    @media all and (max-width: 860px) {
+        width: 230px;
+        height: auto;
+        margin-left: 5px;
+    }
 `;
 
 const StyledNav = styled.nav`
-    margin: 50px 90px;
+    margin: 50px 0px;
     .menu.active {
         opacity: 1;
         visibility: visible;
@@ -35,6 +41,10 @@ const StyledNav = styled.nav`
         visibility: hidden;
         transform: translateY(-40px);
         transition: 0.2s ease;
+    }
+    @media all and (max-width: 1011px) {
+        display: flex;
+        flex-direction: column;
     }
 `;
 
@@ -55,6 +65,13 @@ const StyledLink = styled(Link)`
         `background-color: ${props.to === '/signup' ? colors.secondary : colors.backgroundWhite};
         color : ${props.to === '/signup' ? colors.primary : colors.tertiary};`
     }
+    @media all and (max-width: 640px) {
+        width: 120px;
+        padding: 10px;
+        text-align: center;
+        margin: 0 20px 0 0;
+        font-size: 0.7rem;
+    }
 `;
 
 const StyledMenu = styled.div `
@@ -62,12 +79,16 @@ const StyledMenu = styled.div `
     display: flex;
     flex-direction: column;
     position: absolute;
-    z-index: 5;
-    right: 90px;
-    top: 67px;
+    z-index: 3;
+    right: 60px;
+    top: 38px;
     background-color: ${colors.backgroundWhite};
     box-shadow: 1px 1px 200px #DFDFDF;
-    border-radius: 15px;
+    border-radius: 15px 0 15px 15px;
+    @media all and (max-width: 680px) {
+        right: 20px;
+        top: 67px;
+    }
 `;
 
 const MenuBtn = styled(Link) `
@@ -79,7 +100,11 @@ const MenuBtn = styled(Link) `
     };
     ${(props)=> props.to === '/profile' &&
         `border-radius: 0;
-        padding-top: 50px;`
+        padding-top: 50px;
+        @media all and (max-width: 680px) {
+            border-radius: 15px 0 0 0;
+            padding-top: 25px;
+        }`
     };
     transition: 100ms;
     &:hover {
@@ -91,6 +116,8 @@ const MenuBtn = styled(Link) `
 
 const OpenMenuBtn = styled.button `
     max-width: 400px;
+    position: absolute;
+    right: 60px;
     display: flex;
     align-items: center;
     border: none;
@@ -98,6 +125,8 @@ const OpenMenuBtn = styled.button `
     background-color: ${colors.secondary};
     border-radius: 30px 30px 0 30px; 
     color: ${colors.primary};
+    position: relative;
+    z-index: 10;
     p {
         color: ${colors.primary};
         margin: 15px;
@@ -119,8 +148,15 @@ const OpenMenuBtn = styled.button `
             color: ${colors.backgroundWhite};
         }`
     };
-    position: relative;
-    z-index: 10;
+    @media all and (max-width: 680px) {
+        right: 20px;
+        max-width: 200px;
+        p {
+            width: 0px;
+            overflow: hidden;
+            margin: 0;
+        }
+    }
 `;
 
 const ImageWrapper = styled.div `
@@ -139,6 +175,11 @@ const ImageWrapper = styled.div `
 const IconWrapper = styled.div `
     margin: 18px 15px 15px 15px;
    
+`;
+
+const HomeMenu = styled.div `
+    position: relative;
+    margin: 0;
 `;
 
 function Header() {
@@ -172,7 +213,7 @@ function Header() {
                     </>
                 }   
                 { (location.pathname === '/home' || location.pathname === '/profile')  &&
-                    <div ref={menuRef}>
+                    <HomeMenu ref={menuRef}>
                         <OpenMenuBtn onClick={() => toggle()} state={openMenu}>
                             <ImageWrapper>
                                     <img src={profilePic} alt="" />
@@ -188,7 +229,7 @@ function Header() {
                                 Se déconnecter
                             </MenuBtn>
                         </StyledMenu>
-                    </div>
+                    </HomeMenu>
                 }
             </StyledNav>
         </HeaderStyle>

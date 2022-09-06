@@ -18,6 +18,9 @@ const FormBox = styled.div `
     border-radius: 16px;
     box-shadow: 1px 1px 200px #DFDFDF;
     position: relative;
+    @media all and (max-width: 540px) {
+        width: 100%;
+    }
 `;
 
 const StyledTitle = styled.h2 `
@@ -48,6 +51,14 @@ const StyledInput = styled.input `
         width: 75%;
         padding-left: 78px;
     }
+    @media all and (max-width: 540px) {
+        width: 90%;
+        padding-left: 35px;
+        &:focus {
+            width: 90%;
+            padding-left: 35px;
+        }
+    }
 `;
 
 const StyledBtn = styled.input `
@@ -73,12 +84,18 @@ const EmailWrapper = styled.div `
     position: absolute;
     left: 120px;
     top: 157px;
+    @media all and (max-width: 540px) {
+        left: 60px;
+    }
 `;
 
 const KeyWrapper = styled.div `
     position: absolute;
     left: 120px;
     top: 265px;
+    @media all and (max-width: 540px) {
+        left: 60px;
+    }
 `;
 
 function LoginBox() {

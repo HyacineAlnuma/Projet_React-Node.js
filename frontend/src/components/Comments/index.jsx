@@ -21,11 +21,12 @@ const Comment = styled.div `
     .comment_name {
         font-size: 1.1rem;
         font-weight: bold;
-        margin: 32px 15px 0 25px; 
+        margin: 32px 15px 0 25px;
+        align-self: flex-start; 
     }
-    .comment {
+    .comment_text {
         font-size: 1rem;
-        margin: 0 50px 0px 15px;
+        margin: 0 55px 0 15px;
         padding-top: 33px;
         overflow: auto;
         width: 60%;
@@ -42,6 +43,22 @@ const Comment = styled.div `
         transform: translateX(-20px);
         transition: 0.2s ease;
     }
+    @media all and (max-width: 820px) {
+        .comment {
+            flex-direction: column;
+            width: 70%;
+        }
+        .comment_name {
+            width: 83%;
+            margin-left: 10px;
+            overflow-wrap: break-word;
+        }
+        .comment_text {
+            margin: 0 0 0 15px;
+            padding-top: 10px;
+            width: 100%;
+        }
+    }
 `;
 
 const PictureWrapper = styled.div `
@@ -54,6 +71,9 @@ const PictureWrapper = styled.div `
         max-height: 100%;
         width: auto;
     }
+    @media all and (max-width: 680px) {
+        width: 50px;
+    }
 `;
 
 const UpdateCommentForm = styled.form `
@@ -61,10 +81,11 @@ const UpdateCommentForm = styled.form `
     display: flex;
     align-items: center;
     margin: 20px 0 0 15px;
+    padding-right: 20px;
     input[type=text] {
         width: 85%;
         height: 50px;
-        padding: 15px;
+        padding: 15px 50px 15px 15px;
         border: none;
         outline: none;
         border-radius: 15px 0 0 15px;
@@ -89,7 +110,7 @@ const UpdateCommentForm = styled.form `
     }
     .cancelbtn {
         position: absolute;
-        right: 140px;
+        right: 17%;
         background-color: ${colors.backgroundWhite};
         color: ${colors.tertiary};
         padding: 6px 6px 6px 7px;
@@ -100,6 +121,29 @@ const UpdateCommentForm = styled.form `
         &:hover {
             background-color: #DCDCDC;
             cursor: pointer;
+        }
+    }
+    @media all and (max-width: 850px) {
+        input[type=text] {
+            width: 80%;
+        }
+        .sendbtn {
+            width: 9%;
+        }
+        .cancelbtn {
+            right: 21%;
+        }
+    }
+    @media all and (max-width: 500px) {
+        input[type=text] {
+            width: 70%;
+            padding-right: 20px;
+        }
+        .sendbtn {
+            width: 13%;
+        }
+        .cancelbtn {
+            right: 27%;
         }
     }
 `;
@@ -124,12 +168,17 @@ const StyledMenu = styled.div `
     position: absolute;
     right: -120px;
     top: 10px;
+    z-index: 10;
     width: 120px;
     height: 80px;
     display: flex;
     background-color: ${colors.backgroundWhite};
     flex-direction: column;
     box-shadow: 1px 1px 200px #DFDFDF;
+    @media all and (max-width: 680px) {
+        right: 15px;
+        top: 65px;
+    }
 `;
 
 const MenuBtn = styled.button `
@@ -196,10 +245,10 @@ function Comments(props) {
                     <button className='cancelbtn' onClick={() => setUpdateOn(false)}><AiFillCloseCircle/></button>
                 </UpdateCommentForm>
             ) : (
-                <>
+                <div className='comment'>
                 <p className='comment_name'>{props.username}</p>
-                <p className='comment'>{props.comment}</p>
-                </>
+                <p className='comment_text'>{props.comment}</p>
+                </div>
             )}
             <div ref={menuRef}>
                 <OpenMenuBtn onClick={() => toggle()}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>

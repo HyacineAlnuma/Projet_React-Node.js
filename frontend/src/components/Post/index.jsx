@@ -25,9 +25,11 @@ const PostBox = styled.div `
         display: flex;
         align-items: center;
         .name {
+            width: 50%;
             font-size: 1.1rem;
             font-weight: bold;
             margin-top: 25px;
+            overflow-wrap: break-word;
         }
         .menu.active {
             opacity: 1;
@@ -157,6 +159,11 @@ const UpdatePostForm = styled.form `
             text-decoration: underline;
             cursor: pointer;
         }
+    }
+    > img {
+        width: 200px;
+        height: auto;
+        margin-top: 50px;
     }
 `;
 

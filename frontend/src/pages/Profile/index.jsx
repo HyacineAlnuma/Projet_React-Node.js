@@ -34,6 +34,10 @@ const ProfileBox = styled.form `
     input[type="file"] {
         visibility: hidden;
     }
+    @media all and (max-width: 680px) {
+        width: 100%;
+        padding-left: 30px;
+    }
 `;
 
 const TitleWrapper = styled.div `
@@ -45,24 +49,33 @@ const StyledTitle = styled.h2 `
     font-size: 2rem;
     font-weight: 600;
     position: relative;
-    z-index: 10;
+    z-index: 2;
+    @media all and (max-width: 904px) {
+        font-size: 1.5rem;
+    }
+    @media all and (max-width: 710px) {
+        font-size: 1.1rem;
+    }
 `;
 
 const TitleUnderline = styled.div `
     height: 13px;
     background-color:${colors.secondary};
     position: absolute;
+    top: 22px;
+    left: -5px;
+    z-index: 0;
     ${(props) => props.number === '1' &&
         `width: 430px; 
-        left: 474px;
-        top: 194px;`
+        `
     };
     ${(props) => props.number === '2' &&
         `width: 463px; 
-        top: 22px;
-        left: -5px;
-        z-index: 0;`
+        `
     };
+    @media all and (max-width: 904px) {
+        visibility: hidden;
+    }
 `;
 
 const StyledInput = styled.input `
@@ -144,8 +157,7 @@ function Profile() {
 
     return (
         <ProfileBox action='' onSubmit={handleSubmit}>
-            <StyledTitle>Modifier la photo de profil</StyledTitle>
-            <TitleUnderline number='1'></TitleUnderline>
+            <TitleWrapper><StyledTitle>Modifier la photo de profil</StyledTitle><TitleUnderline number='1'></TitleUnderline></TitleWrapper>
             <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
             <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
             { image !== '' && <img src={image} alt="" /> }
