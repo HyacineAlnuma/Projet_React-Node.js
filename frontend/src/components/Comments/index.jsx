@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
-import { BiDotsHorizontalRounded, BiSend, BiWindows } from 'react-icons/bi';
+import { BiDotsHorizontalRounded, BiSend } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
 import { useClickOutside } from '../../utils/hooks/useClickOutside';
@@ -14,22 +14,28 @@ const Comment = styled.div `
     position: relative;
     border-radius: 15px;
     background-color: ${colors.backgroundLight};
-    > div {
+    > .comment {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        width: 70%;
+        align-items: flex-start;
+        width: 100%;
     }
     .comment_name {
+        width: 83%;
+        margin: 30px 0 10px 10px;
+        overflow-wrap: break-word;    
         font-size: 1.1rem;
         font-weight: bold;
-        margin: 32px 15px 0 25px;
-        align-self: flex-start; 
+        
     }
     .comment_text {
+        margin: 0 0 0 10px;
+        padding: 0 25px 0 0;
+        width: 100%;
         font-size: 1rem;
-        margin: 0 55px 0 15px;
-        padding-top: 33px;
         overflow: auto;
-        width: 60%;
+        
     }
     .comment_menu.active {
         opacity: 1;
@@ -42,22 +48,6 @@ const Comment = styled.div `
         visibility: hidden;
         transform: translateX(-20px);
         transition: 0.2s ease;
-    }
-    @media all and (max-width: 820px) {
-        .comment {
-            flex-direction: column;
-            width: 70%;
-        }
-        .comment_name {
-            width: 83%;
-            margin-left: 10px;
-            overflow-wrap: break-word;
-        }
-        .comment_text {
-            margin: 0 0 0 15px;
-            padding-top: 10px;
-            width: 100%;
-        }
     }
 `;
 
@@ -199,11 +189,13 @@ function Comments(props) {
     const [openMenu, toggle] = useClickOutside(menuRef);
 
     const token = Cookie.get('token');
+    const userRole = Cookie.get('userRole');
     const userId = localStorage.getItem('userId');
 
     function deleteComment(data) {
         axios.delete(`http://localhost:4200/api/posts/${data}/comment`,{ 
-            headers: {"Authorization" : `Bearer ${token}`} 
+            headers: {"Authorization" : `Bearer ${token}`},
+            data: {userRole: userRole}  
         })
             .then(res => {
                 console.log(res);
@@ -217,7 +209,8 @@ function Comments(props) {
     function updateComment(data) {
         const postData = [{
             'userId': userId,
-            'comment': comment
+            'comment': comment,
+            'userRole': userRole
         }]
         axios.put(`http://localhost:4200/api/posts/${data}/comment`, postData, { 
             headers: {"Authorization" : `Bearer ${token}`} 
@@ -246,8 +239,8 @@ function Comments(props) {
                 </UpdateCommentForm>
             ) : (
                 <div className='comment'>
-                <p className='comment_name'>{props.username}</p>
-                <p className='comment_text'>{props.comment}</p>
+                    <p className='comment_name'>{props.username}</p>
+                    <p className='comment_text'>{props.comment}</p>
                 </div>
             )}
             <div ref={menuRef}>

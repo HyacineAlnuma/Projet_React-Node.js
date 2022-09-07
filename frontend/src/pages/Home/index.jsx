@@ -4,6 +4,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { BiDownload } from 'react-icons/bi';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
 
 import Post from '../../components/Post';
@@ -70,6 +71,7 @@ const ImageWrapper = styled.div `
     }
     @media all and (max-width: 680px) {
         width: 0;
+        overflow: hidden;
     }
 `;
 
@@ -109,6 +111,22 @@ const InputWrapper = styled.div `
         height: auto;
         margin-left: 140px;
     }
+    > div {
+        display: flex;
+    }
+    .cancelbtn {
+        background-color: ${colors.backgroundWhite};
+        color: ${colors.tertiary};
+        padding: 6px 6px 6px 7px;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        &:hover {
+            background-color: #DCDCDC;
+            cursor: pointer;
+        }
+    }
     @media all and (max-width: 680px) {
         label {
             position: absolute;
@@ -119,9 +137,7 @@ const InputWrapper = styled.div `
             }
         }
         textarea {
-            width: 80%;
-            margin-left: 10px;
-            margin-top: 0;
+            margin: 0 0 0 15px;
         }
     }
 `;
@@ -216,7 +232,12 @@ function Home() {
                     <textarea type='text' placeholder='Écrivez ce qui vous passe par l’esprit...' value={textpost} onChange={(e) => setTextpost(e.target.value)}></textarea>
                     <label htmlFor="files"><BiDownload size={22}/><p>Importer une image</p></label>
                     <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
-                    { image !== '' && <img src={image} alt="" /> }
+                    { image !== '' && 
+                        <div>
+                            <img src={image} alt="" />
+                            <button className='cancelbtn' onClick={() => setImage('')}><AiFillCloseCircle/></button>
+                        </div>
+                    }
                 </InputWrapper>
                 <SubmitBtn type="submit" value="Publier"/>
             </CreatePost>

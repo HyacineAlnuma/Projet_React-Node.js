@@ -77,6 +77,7 @@ exports.updatePost = (req, res, next) => {
 
 exports.deletePost = (req, res, next) => {
     let sql = `SELECT * FROM posts WHERE id = ?`;
+    console.log(req.body);
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (!result) {
@@ -154,7 +155,7 @@ exports.commentPost = (req, res, next) => {
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (result.lenght < 1) {
-            res.status(404).json({ error: new Error('Post inexistant !') });
+            res.status(404).json({ message: 'Post inexistant !' });
         } else {
             sql = `INSERT INTO comments (userId, postId, comment) VALUES (?, ?, ?)`;
             db.query(sql, [commentObject.userId, result[0].id, commentObject.comment], (err, response) => {
@@ -174,7 +175,7 @@ exports.deleteComment = (req, res, next) => {
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (result.lenght < 1) {
-            res.status(404).json({ error: new Error('Commentaire inexistant !') });
+            res.status(404).json({ message: 'Commentaire inexistant !' });
         }
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ message: "Vous ne pouvez pas supprimer un commentaire d'un autre utilisateur", action: 0 });
@@ -194,11 +195,12 @@ exports.deleteComment = (req, res, next) => {
 
 exports.updateComment = (req, res, next) => {
     const putObject = req.body[0];
+    console.log(req.body);
     let sql = `SELECT * FROM comments WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (result.lenght < 1) {
-            res.status(404).json({ error: new Error('Commentaire inexistant !') });
+            res.status(404).json({ message: 'Commentaire inexistant !', action: 0 });
         } 
         if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
             res.status(403).json({ message: "Vous ne pouvez pas modifier un commentaire d'un autre utilisateur", action: 0});

@@ -176,7 +176,10 @@ function SignupBox() {
                 setCookie('token', res.data.token),
                 navigate('/home'),
                 )
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     return (

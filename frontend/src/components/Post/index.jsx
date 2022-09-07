@@ -205,6 +205,7 @@ function Post(props) {
     const [openMenu, toggle] = useClickOutside(menuRef);
     
     const token = Cookie.get('token');
+    const userRole = Cookie.get('userRole');
     const userId = localStorage.getItem('userId');
 
     useEffect(() => {
@@ -231,6 +232,7 @@ function Post(props) {
         postData.append('userId', userId);
         postData.append('textpost', textpost);
         postData.append('imageUrl', file);
+        postData.append('userRole', userRole);
         axios.put(`http://localhost:4200/api/posts/${data}`, postData, { 
             headers: {"Authorization" : `Bearer ${token}`} 
         })
@@ -245,7 +247,6 @@ function Post(props) {
 
     function imageHandle(e) {
         let files = Array.from(e.target.files);
-        console.log(files);
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
@@ -255,8 +256,9 @@ function Post(props) {
     }
 
     function deletePost(data) {
-        axios.delete(`http://localhost:4200/api/posts/${data}`,{ 
-            headers: {"Authorization" : `Bearer ${token}`} 
+        axios.delete(`http://localhost:4200/api/posts/${data}`, { 
+            headers: {"Authorization" : `Bearer ${token}`},
+            data: {userRole: userRole} 
         })
             .then(res => {
                 console.log(res);
@@ -272,7 +274,7 @@ function Post(props) {
             'userId': userId
         }];
         axios.post(`http://localhost:4200/api/posts/${props}/like`, likeData, { 
-            headers: {"Authorization" : `Bearer ${token}`}
+            headers: {"Authorization" : `Bearer ${token}`},
         })
             .then(res => {
                 console.log(res);

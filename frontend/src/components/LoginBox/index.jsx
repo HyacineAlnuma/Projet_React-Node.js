@@ -117,10 +117,15 @@ function LoginBox() {
                     localStorage.setItem('username', res.data.username);
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);
                     setCookie('token', res.data.token);
+                    setCookie('userRole', res.data.userRole);
                     navigate('/home');
+                    console.log(res);
                 }
             )
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                window.alert(JSON.stringify(err.response.data.message));
+            })
     }
 
     return (

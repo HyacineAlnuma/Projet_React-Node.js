@@ -193,6 +193,7 @@ function Header() {
 
     function Logout() {
         Cookie.remove('token');
+        Cookie.remove('userRole');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         localStorage.removeItem('pictureUrl');

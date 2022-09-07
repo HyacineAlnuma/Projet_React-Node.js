@@ -19,8 +19,9 @@ exports.signup = (req, res, next) => {
         .then(hash => {
                 let sql = `INSERT INTO users (email, passwordhash, username, pictureUrl, userRole) VALUES (?, ?, ?, ?, ?)`;
                 db.query(sql, [postObject.email, hash, postObject.username, postObject.pictureUrl, postObject.userRole], (err, result) => {
-                    if (err) throw err;
-                    console.log(result);
+                    if (err) {
+                        res.status(401).json({ error: err, message: 'Cette adresse email est déjà utilisée' });
+                    }
                     res.send(result);
                 });
         })
@@ -32,25 +33,28 @@ exports.login = (req, res, next) => {
     let sql = `SELECT * FROM users WHERE email = ?`;
     db.query(sql, [req.body.email], (err, result) => {
         if (err) throw err;
-        if (!result) {
-            return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+        if (result.length === 0) {
+            res.status(401).json({ message: 'Utilisateur non trouvé !' });
+        } else {
+            bcrypt.compare(req.body.password, result[0].passwordhash)
+                .then(valid => {
+                    if (!valid) {
+                        res.status(401).json({ message: 'Mot de passe incorrect !' });
+                    } else {
+                        res.status(200).json({
+                            userId: result[0].id,
+                            token: jwt.sign(
+                                { userId: result[0].id },
+                                process.env.TOKEN_KEY,
+                                { expiresIn: '24h' }
+                            ),
+                            pictureUrl: result[0].pictureUrl,
+                            username: result[0].username,
+                            userRole: result[0].userRole
+                        });
+                    }
+                })
         }
-        bcrypt.compare(req.body.password, result[0].passwordhash)
-            .then(valid => {
-                if (!valid) {
-                    return res.status(401).json({ error: 'Mot de passe incorrect !' });
-                }
-                res.status(200).json({
-                    userId: result[0].id,
-                    token: jwt.sign(
-                        { userId: result[0].id },
-                        process.env.TOKEN_KEY,
-                        { expiresIn: '24h' }
-                    ),
-                    pictureUrl: result[0].pictureUrl,
-                    username: result[0].username
-                });
-            })
     })
 };
 
@@ -83,20 +87,29 @@ exports.modifyProfile = (req, res, next) => {
                                             pictureUrl: result[0].pictureUrl,
                                             username: username })
                 })
-            }  else {     
-                const filename = result[0].pictureUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
-                    console.log(req.body);
-                    console.log(req.files);
+            } else {   
+                if (result[0].pictureUrl == null) {
                     sql = `UPDATE users SET username = ?, pictureUrl = ? WHERE id = ?`;
-                    db.query(sql, [username, postObject.pictureUrl, req.body.userId], (err, result) => {
-                        if (err) throw err;
-                        res.status(201).json({ message: 'Utilisateur modifié !',
-                                                action: 1,
-                                                pictureUrl: postObject.pictureUrl,
-                                                username: username })
+                        db.query(sql, [username, postObject.pictureUrl, req.body.userId], (err, result) => {
+                            if (err) throw err;
+                            res.status(201).json({ message: 'Utilisateur modifié !',
+                                                    action: 1,
+                                                    pictureUrl: postObject.pictureUrl,
+                                                    username: username })
+                        });
+                } else {
+                    const filename = result[0].pictureUrl.split('/images/')[1];
+                    fs.unlink(`images/${filename}`, () => {
+                        sql = `UPDATE users SET username = ?, pictureUrl = ? WHERE id = ?`;
+                        db.query(sql, [username, postObject.pictureUrl, req.body.userId], (err, result) => {
+                            if (err) throw err;
+                            res.status(201).json({ message: 'Utilisateur modifié !',
+                                                    action: 1,
+                                                    pictureUrl: postObject.pictureUrl,
+                                                    username: username })
+                        });
                     });
-                });
+                }
             }
         }
     });
