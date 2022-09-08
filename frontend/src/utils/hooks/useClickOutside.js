@@ -17,6 +17,7 @@ export function useClickOutside(menuRef) {
     })
     const toggle = useCallback(() => {
         setOpenMenu(!openMenu);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return([openMenu, toggle]);
 }
