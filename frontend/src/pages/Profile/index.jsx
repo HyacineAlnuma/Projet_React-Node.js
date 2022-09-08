@@ -66,12 +66,10 @@ const TitleUnderline = styled.div `
     left: -5px;
     z-index: 0;
     ${(props) => props.number === '1' &&
-        `width: 430px; 
-        `
+        `width: 430px;`
     };
     ${(props) => props.number === '2' &&
-        `width: 463px; 
-        `
+        `width: 463px;`
     };
     @media all and (max-width: 904px) {
         visibility: hidden;
@@ -133,7 +131,6 @@ function Profile() {
     }
 
     function handleSubmit(e) {
-        console.log(userId);
         e.preventDefault();
         const putData = new FormData();
         putData.append('userId', userId);

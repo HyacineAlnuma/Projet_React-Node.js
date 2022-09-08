@@ -182,6 +182,7 @@ function Home() {
         if (token == null) {
             navigate('/login');
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function imageHandler(e) {
@@ -205,7 +206,8 @@ function Home() {
         })
             .then(res => {
                 console.log(res);
-                window.location.reload(false);
+                setTextpost('');
+                setImage('');
             })
             .catch(err => console.log(err))
     }
@@ -218,6 +220,7 @@ function Home() {
                 setPostsList(res.data.results);
             })
             .catch(err => console.log(err))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [postsList]);
 
     return(

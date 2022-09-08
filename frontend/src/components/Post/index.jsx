@@ -16,7 +16,7 @@ const PostBox = styled.div `
     padding-bottom: 20px;
     margin-bottom: 50px;
     position: relative;
-    > img {
+    a > img {
         width: 200px;
         height: auto;
         margin-left: 20px;
@@ -176,15 +176,16 @@ const IconsWrapper = styled.div `
         margin: 20px 20px 20px 5px !important;
         color: ${colors.tertiary};
     }
-    > button {
+    button {
         display: flex;
         align-items: center;
         padding-left: 5px;
         background-color: ${colors.backgroundWhite};
-        color: ${colors.primary};
         border: none;
         cursor: pointer;
-    }
+        transition: 500ms ease;
+        color: ${colors.primary};
+    }  
 `;
 
 const CommentSeparation = styled.div `
@@ -206,7 +207,7 @@ function Post(props) {
     
     const token = Cookie.get('token');
     const userRole = Cookie.get('userRole');
-    const userId = localStorage.getItem('userId');
+    const userId = +localStorage.getItem('userId');
 
     useEffect(() => {
         axios.get(`http://localhost:4200/api/posts/${props.id}/likes`,{ 
@@ -214,14 +215,14 @@ function Post(props) {
         })
             .then(res => {
                 setLikesList(res.data.result);
-
             })
             .catch(err => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [likesList]);
 
     let likedPost = false;
     for(let i = 0; i < likesList.length; i++) {
-        if (likesList[i].userId == userId) {
+        if (likesList[i].userId === userId) {
             likedPost = true;
             break;
         }
@@ -309,14 +310,14 @@ function Post(props) {
             ) : (
                 <>
                 <p className='textpost'>{props.textpost}</p>
-                <img src={props.imageUrl} alt="" />
+                <a href={props.imageUrl}><img src={props.imageUrl} alt="" /></a>
                 </>
             )}
             <IconsWrapper>
                 {likedPost ? (
-                    <button onClick={() => likePost(props.id)}><AiFillHeart size={24}/><p>{likesList.length}</p></button> 
+                    <button state={likedPost} onClick={() => likePost(props.id)}><AiFillHeart size={24}/><p>{likesList.length}</p></button>
                 ) : (
-                    <button onClick={() => likePost(props.id)}><AiOutlineHeart size={24}/><p>{likesList.length}</p></button>
+                    <button state={likedPost} onClick={() => likePost(props.id)}><AiOutlineHeart size={24}/><p>{likesList.length}</p></button>
                 )}
                 <BiCommentDetail size={24}/><p>{props.commentsNumber}</p>
             </IconsWrapper>

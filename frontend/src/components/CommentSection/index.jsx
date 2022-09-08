@@ -3,7 +3,7 @@ import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
-import { BiSend, BiDotsHorizontalRounded } from 'react-icons/bi';
+import { BiSend } from 'react-icons/bi';
 
 import Comments from '../Comments';
 
@@ -91,6 +91,7 @@ function CommentSection(props) {
                 setCommentsList(res.data.result);
             })
             .catch(err => console.log(err))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [commentsList]);
 
     function addComment(e) {
@@ -105,6 +106,7 @@ function CommentSection(props) {
         })
             .then(res => {
                 console.log(res);
+                setComment('');
             })
             .catch(err => console.log(err))
     }

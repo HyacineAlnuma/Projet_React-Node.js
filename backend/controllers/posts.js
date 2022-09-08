@@ -42,7 +42,6 @@ exports.updatePost = (req, res, next) => {
         ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${file.filename}`
     } : {...req.body};
-    console.log(postObject);
     let sql = `SELECT * FROM posts WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
@@ -77,7 +76,6 @@ exports.updatePost = (req, res, next) => {
 
 exports.deletePost = (req, res, next) => {
     let sql = `SELECT * FROM posts WHERE id = ?`;
-    console.log(req.body);
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (!result) {
@@ -195,7 +193,6 @@ exports.deleteComment = (req, res, next) => {
 
 exports.updateComment = (req, res, next) => {
     const putObject = req.body[0];
-    console.log(req.body);
     let sql = `SELECT * FROM comments WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;

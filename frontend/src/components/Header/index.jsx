@@ -116,6 +116,7 @@ const MenuBtn = styled(Link) `
 
 const OpenMenuBtn = styled.button `
     max-width: 400px;
+    min-width: 210px;
     position: absolute;
     right: 60px;
     display: flex;
@@ -151,6 +152,7 @@ const OpenMenuBtn = styled.button `
     @media all and (max-width: 680px) {
         right: 20px;
         max-width: 200px;
+        min-width: 0;
         p {
             width: 0px;
             overflow: hidden;
@@ -189,6 +191,7 @@ function Header() {
 
     const profilePic = localStorage.getItem('pictureUrl');
     const username = localStorage.getItem('username');
+    let token = Cookie.get('token');
 
 
     function Logout() {
@@ -203,17 +206,7 @@ function Header() {
         <HeaderStyle>
             <Link to='/home'><ImageStyle src= {logo} alt='Logo Groupomania'></ImageStyle></Link>
             <StyledNav>
-                { (location.pathname !== '/home' && location.pathname !== '/profile') &&
-                    <>
-                    <StyledLink to="/signup" page={location.pathname}>
-                        Créer un compte
-                    </StyledLink>
-                    <StyledLink to="/login" page={location.pathname}>
-                        Se connecter
-                    </StyledLink>
-                    </>
-                }   
-                { (location.pathname === '/home' || location.pathname === '/profile')  &&
+                { token ? (
                     <HomeMenu ref={menuRef}>
                         <OpenMenuBtn onClick={() => toggle()} state={openMenu}>
                             <ImageWrapper>
@@ -231,7 +224,16 @@ function Header() {
                             </MenuBtn>
                         </StyledMenu>
                     </HomeMenu>
-                }
+                ) : (
+                    <>
+                    <StyledLink to="/signup" page={location.pathname}>
+                        Créer un compte
+                    </StyledLink>
+                    <StyledLink to="/login" page={location.pathname}>
+                        Se connecter
+                    </StyledLink>
+                    </>
+                )}
             </StyledNav>
         </HeaderStyle>
     );

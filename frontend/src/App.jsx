@@ -1,8 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GlobalStyle from './utils/style/GlobalStyle';
-
-
 
 import Header from './components/Header';
 import SignupBox from './components/SignupBox';

@@ -4,7 +4,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
-import { BiKey, BiDownload } from "react-icons/bi";
+import { BiKey, BiDownload, BiImage } from "react-icons/bi";
 import { BsFillPersonFill } from "react-icons/bs";
 import setCookie from '../../utils/hooks/SetCookie';
 
@@ -39,17 +39,17 @@ const StyledForm = styled.form `
 `;
 
 const StyledInput = styled.input `
-    width: 60%;
+    width: 70%;
     height: 60px;
     color: ${colors.tertiary};
     padding-left: 50px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border: 0;
     outline: 0;
     border-bottom: 1px solid ${colors.tertiary};
     transition: 400ms ease-out;
     &:focus {
-        width: 75%;
+        width: 85%;
         padding-left: 78px;
     }
     @media all and (max-width: 540px) {
@@ -81,28 +81,22 @@ const StyledBtn = styled.input `
     } 
 `;
 
-const EmailWrapper = styled.div `
+const IconWrapper = styled.div `
     position: absolute;
-    left: 120px;
-    top: 132px;
-    @media all and (max-width: 540px) {
-        left: 60px;
-    }
-`;
-
-const KeyWrapper = styled.div `
-    position: absolute;
-    left: 120px;
-    top: 229px;
-    @media all and (max-width: 540px) {
-        left: 60px;
-    }
-`;
-
-const PersonWrapper = styled.div `
-    position: absolute;
-    left: 120px;
+    left: 105px;
     top: 329px;
+    ${(props) => props.type === 'email' &&
+        `top: 132px;`
+    };
+    ${(props) => props.type === 'key' &&
+        `top: 229px;`
+    };
+    ${(props) => props.type === 'person' &&
+        `top: 329px;`
+    };
+    ${(props) => props.type === 'image' &&
+        `top: 421px;`
+    };
     @media all and (max-width: 540px) {
         left: 60px;
     }
@@ -111,8 +105,8 @@ const PersonWrapper = styled.div `
 const PictureTitle = styled.p `
     width: 60%;
     height: 20px;
-    padding: 10px 0 0 10px;
-    font-size: 1.2rem;
+    padding: 10px 0 0 30px;
+    font-size: 1rem;
     color: #747474;
     position: relative;
 `;
@@ -131,6 +125,7 @@ const PictureWrapper = styled.div `
     input[type="file"] {
         visibility: hidden;
         position: absolute;
+        width: 0;
     }
     label {
         color: ${colors.primary};
@@ -154,7 +149,6 @@ function SignupBox() {
 
     function imageHandler(e) {
         let files = Array.from(e.target.files);
-        console.log(files);
         setFile(files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
@@ -185,9 +179,10 @@ function SignupBox() {
     return (
         <FormBox>
             <StyledTitle>Créer un compte</StyledTitle>
-            <EmailWrapper><FiMail size={23}/></EmailWrapper>
-            <KeyWrapper><BiKey size={27}/></KeyWrapper>
-            <PersonWrapper><BsFillPersonFill size={26}/></PersonWrapper>
+            <IconWrapper type='email'><FiMail size={23}/></IconWrapper>
+            <IconWrapper type='key'><BiKey size={27}/></IconWrapper>
+            <IconWrapper type='person'><BsFillPersonFill size={26}/></IconWrapper>
+            <IconWrapper type='image'><BiImage size={26}/></IconWrapper>
             <StyledForm action="" onSubmit={handleSubmit}>
                 <StyledInput type="email" placeholder='Adresse email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
                 <StyledInput type="password" placeholder='Mot de passe' value={password} onChange={(e) => setPassword(e.target.value)} required/>
