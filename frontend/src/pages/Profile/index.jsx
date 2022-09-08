@@ -118,6 +118,7 @@ function Profile() {
         if (token == null) {
             navigate('/login');
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function imageHandler(e) {
