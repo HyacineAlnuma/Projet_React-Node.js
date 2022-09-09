@@ -6,7 +6,7 @@ import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
 import { BiKey, BiDownload, BiImage } from "react-icons/bi";
 import { BsFillPersonFill } from "react-icons/bs";
-import setCookie from '../../utils/hooks/SetCookie';
+
 
 const FormBox = styled.div `
     margin: 4% auto;
@@ -166,10 +166,10 @@ function SignupBox() {
         userData.append('userRole', 'basicUser');
         userData.append('pictureUrl', file);
         axios.post('http://localhost:4200/api/auth/signup', userData)
-            .then(res => 
-                setCookie('token', res.data.token),
-                navigate('/home'),
-                )
+            .then(res => {
+                navigate('/login');
+                window.alert('Votre compte a bien été créé !');
+                })
             .catch(err => {
                 console.log(err);
                 window.alert(JSON.stringify(err.response.data.message));

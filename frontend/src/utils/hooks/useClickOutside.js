@@ -14,10 +14,11 @@ export function useClickOutside(menuRef) {
         return () => {
             document.removeEventListener("click", handler);
         }
-    })
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openMenu]);
     const toggle = useCallback(() => {
         setOpenMenu(!openMenu);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [openMenu]);
     return([openMenu, toggle]);
 }

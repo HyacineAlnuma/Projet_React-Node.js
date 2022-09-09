@@ -239,6 +239,7 @@ function Post(props) {
         })
             .then(res => {
                 console.log(res);
+                setUpdateOn(false);
             })
             .catch(err => {
                 console.log(err);
@@ -299,7 +300,7 @@ function Post(props) {
                 </div>
             </div>
             { updateOn ? (
-                <UpdatePostForm action='' onSubmit={() => updatePost(props.id)}>
+                <UpdatePostForm action='' onSubmit={(e) => {e.preventDefault(); updatePost(props.id)}}>
                     <textarea type="text" rows='5' onChange={(e) => setTextpost(e.target.value)}>{props.textpost}</textarea>
                     <label htmlFor="file"><BiDownload size={22}/> Importer une image</label>
                     <input id="file" type="file" onChange={(e) => {imageHandle(e)}}/>

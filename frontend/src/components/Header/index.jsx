@@ -7,6 +7,7 @@ import Cookie from 'js-cookie';
 import { FiMenu } from "react-icons/fi";
 import { CgClose } from "react-icons/cg";
 import { useClickOutside } from '../../utils/hooks/useClickOutside';
+import { useEffect } from 'react';
 
 const HeaderStyle = styled.header`
     display: flex;
@@ -165,10 +166,10 @@ const ImageWrapper = styled.div `
     width: 40px;
     height 40px;
     overflow: hidden;
+    border-radius: 50%;
     margin: 0 15px;
     img {
         max-height: 100%;
-        border-radius: 50%;
         width: auto;
         object-fit: cover;
     }
@@ -188,6 +189,7 @@ function Header() {
     const location = useLocation();
     const menuRef = useRef();
     const [openMenu, toggle] = useClickOutside(menuRef);
+
 
     const profilePic = localStorage.getItem('pictureUrl');
     const username = localStorage.getItem('username');
@@ -214,7 +216,7 @@ function Header() {
                             </ImageWrapper>
                             <p>{username}</p>
                             <IconWrapper>
-                                {openMenu ? <CgClose size={30}/> : <FiMenu size={30}/>}
+                                {openMenu ? <CgClose onClick={() => toggle()} size={30}/> : <FiMenu onClick={() => toggle()} size={30}/>}
                             </IconWrapper>                 
                         </OpenMenuBtn>
                         <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
