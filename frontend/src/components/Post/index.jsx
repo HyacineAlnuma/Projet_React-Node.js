@@ -6,6 +6,8 @@ import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
 import { BiCommentDetail, BiDotsVerticalRounded, BiDownload } from 'react-icons/bi';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import CryptoJS from 'crypto-js';
+import Utf8 from 'crypto-js/enc-utf8';
 
 import CommentSection from '../CommentSection';
 
@@ -204,10 +206,20 @@ function Post(props) {
     const [likesList, setLikesList] = useState([]);
     const menuRef = useRef();
     const [openMenu, toggle] = useClickOutside(menuRef);
+    const [usersPost, setUsersPost] = useState(false);
     
-    const token = Cookie.get('token');
-    const userRole = Cookie.get('userRole');
+    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
+    const encryptedToken = Cookie.get('token');
+    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const encryptedUserRole = Cookie.get('userRole');
+    const userRole = CryptoJS.AES.decrypt(encryptedUserRole, passphrase).toString(Utf8);
     const userId = +localStorage.getItem('userId');
+
+    useEffect(() => {
+        if (userId === props.userId || userRole === 'admin') {
+                setUsersPost(true);
+            }; 
+    }, []);
 
     useEffect(() => {
         axios.get(`http://localhost:4200/api/posts/${props.id}/likes`,{ 
@@ -229,6 +241,7 @@ function Post(props) {
     }
 
     function updatePost(data) {
+        console.log(userRole);
         const postData = new FormData();
         postData.append('userId', userId);
         postData.append('textpost', textpost);
@@ -291,13 +304,15 @@ function Post(props) {
                     <img src={props.pictureUrl} alt="" />
                 </PictureWrapper>
                 <p className='name'>{props.username}</p>
-                <div ref={menuRef}>
-                    <OpenMenuBtn  onClick={() => toggle()}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
-                    <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
-                        <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
-                        <MenuBtn onClick={() => deletePost(props.id)}>Supprimer</MenuBtn>
-                    </StyledMenu>
-                </div>
+                {usersPost ? (
+                    <div ref={menuRef}>
+                        <OpenMenuBtn  onClick={() => toggle()}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
+                        <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
+                            <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
+                            <MenuBtn onClick={() => deletePost(props.id)}>Supprimer</MenuBtn>
+                        </StyledMenu>
+                    </div>
+                ) : ('')}
             </div>
             { updateOn ? (
                 <UpdatePostForm action='' onSubmit={(e) => {e.preventDefault(); updatePost(props.id)}}>

@@ -193,13 +193,14 @@ exports.deleteComment = (req, res, next) => {
 
 exports.updateComment = (req, res, next) => {
     const putObject = req.body[0];
+    console.log(putObject.userRole);
     let sql = `SELECT * FROM comments WHERE id = ?`;
     db.query(sql, [req.params.id], (err, result) => {
         if (err) throw err;
         if (result.lenght < 1) {
             res.status(404).json({ message: 'Commentaire inexistant !', action: 0 });
         } 
-        if (result[0].userId !== req.auth.userId && req.body.userRole !== "admin") {
+        if (result[0].userId !== req.auth.userId && putObject.userRole !== "admin") {
             res.status(403).json({ message: "Vous ne pouvez pas modifier un commentaire d'un autre utilisateur", action: 0});
         } else {
             sql = `UPDATE comments SET comment = ? WHERE id = ?`;

@@ -4,6 +4,8 @@ import styled from "styled-components";
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
 import { BiSend } from 'react-icons/bi';
+import CryptoJS from 'crypto-js';
+import Utf8 from 'crypto-js/enc-utf8';
 
 import Comments from '../Comments';
 
@@ -78,7 +80,9 @@ const PictureWrapper = styled.div `
 function CommentSection(props) {
     const userId = localStorage.getItem('userId');
     const profilePic = localStorage.getItem('pictureUrl');
-    const token = Cookie.get('token');
+    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
+    const encryptedToken = Cookie.get('token');
+    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
 
     const [comment, setComment] = useState('');
     const [commentsList, setCommentsList] = useState([]);

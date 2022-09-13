@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styled from "styled-components";
 import colors from '../../utils/style/colors';
@@ -6,6 +6,8 @@ import { BiDotsHorizontalRounded, BiSend } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
 import { useClickOutside } from '../../utils/hooks/useClickOutside';
+import CryptoJS from 'crypto-js';
+import Utf8 from 'crypto-js/enc-utf8';
 
 const Comment = styled.div `
     width: 100%;
@@ -187,10 +189,20 @@ function Comments(props) {
     const [comment, setComment] = useState(props.comment);
     const menuRef = useRef();
     const [openMenu, toggle] = useClickOutside(menuRef);
+    const [usersComment, setUsersComment] = useState(false);
 
-    const token = Cookie.get('token');
-    const userRole = Cookie.get('userRole');
-    const userId = localStorage.getItem('userId');
+    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
+    const encryptedToken = Cookie.get('token');
+    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const encryptedUserRole = Cookie.get('userRole');
+    const userRole = CryptoJS.AES.decrypt(encryptedUserRole, passphrase).toString(Utf8);
+    const userId = +localStorage.getItem('userId');
+
+    useEffect(() => {
+        if (userId === props.userId || userRole === 'admin') {
+                setUsersComment(true);
+            }; 
+    }, []);
 
     function deleteComment(data) {
         axios.delete(`http://localhost:4200/api/posts/${data}/comment`,{ 
@@ -207,6 +219,7 @@ function Comments(props) {
     }
 
     function updateComment(data) {
+        console.log(userRole);
         const postData = [{
             'userId': userId,
             'comment': comment,
@@ -217,6 +230,7 @@ function Comments(props) {
         })
             .then(res => {
                 console.log(res);
+                setUpdateOn(false);
             })
             .catch(err => {
                 console.log(err);
@@ -232,7 +246,7 @@ function Comments(props) {
                 </PictureWrapper>       
             </div>
             { updateOn ? (
-                <UpdateCommentForm action='' onSubmit={() => updateComment(props.id)}>
+                <UpdateCommentForm action='' onSubmit={(e) => {e.preventDefault(); updateComment(props.id)}}>
                     <input type="text" value={comment} onChange={(e) => setComment(e.target.value)}/>
                     <button className='sendbtn' type="submit"><BiSend size={30}/></button>
                     <button className='cancelbtn' onClick={() => setUpdateOn(false)}><AiFillCloseCircle/></button>
@@ -243,13 +257,15 @@ function Comments(props) {
                     <p className='comment_text'>{props.comment}</p>
                 </div>
             )}
-            <div ref={menuRef}>
-                <OpenMenuBtn onClick={() => toggle()}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>
-                <StyledMenu className={`comment_menu ${openMenu? 'active' : 'inactive'}`}>
-                    <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
-                    <MenuBtn onClick={() => deleteComment(props.id)}>Supprimer</MenuBtn>
-                </StyledMenu>
-            </div>
+            { usersComment ? (
+                <div ref={menuRef}>
+                    <OpenMenuBtn onClick={() => toggle()}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>
+                    <StyledMenu className={`comment_menu ${openMenu? 'active' : 'inactive'}`}>
+                        <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
+                        <MenuBtn onClick={() => deleteComment(props.id)}>Supprimer</MenuBtn>
+                    </StyledMenu>
+                </div>
+            ) : ('')}
         </Comment>
     );
 }

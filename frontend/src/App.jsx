@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GlobalStyle from './utils/style/GlobalStyle';
 
 import Header from './components/Header';
-import SignupBox from './components/SignupBox';
-import LoginBox from './components/LoginBox';
+import SignupBox from './pages/Signup';
+import LoginBox from './pages/Login';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Error from './components/Error';

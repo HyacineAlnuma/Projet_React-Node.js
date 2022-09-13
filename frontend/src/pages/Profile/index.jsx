@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { BiDownload } from 'react-icons/bi';
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
+import CryptoJS from 'crypto-js';
+import Utf8 from 'crypto-js/enc-utf8';
 
 const ProfileBox = styled.form `
     width: 50%;
@@ -110,6 +112,9 @@ function Profile() {
     const [file, setFile] = useState();
     const [image, setImage] = useState('');
     const navigate = useNavigate();
+    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
+    const encryptedToken = Cookie.get('token');
+    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
 
     const userId = localStorage.getItem('userId');
 
@@ -142,7 +147,9 @@ function Profile() {
         if (username.length > 25) {
             window.alert("Le nom d'utilisateur ne doit pas dépacer 25 caractères");
         } else {
-            axios.put('http://localhost:4200/api/auth/modify', putData)
+            axios.put('http://localhost:4200/api/auth/modify', putData, { 
+                headers: {"Authorization" : `Bearer ${token}`} 
+            })
                 .then(res => {
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);
                     localStorage.setItem('username', res.data.username);
