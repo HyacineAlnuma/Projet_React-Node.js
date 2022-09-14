@@ -219,6 +219,7 @@ function Post(props) {
         if (userId === props.userId || userRole === 'admin') {
                 setUsersPost(true);
             }; 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -308,7 +309,7 @@ function Post(props) {
                     <div ref={menuRef}>
                         <OpenMenuBtn  onClick={() => toggle()}><BiDotsVerticalRounded size={30}/></OpenMenuBtn>
                         <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
-                            <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
+                            <MenuBtn onClick={() => {setUpdateOn(true); toggle();}} >Modifier</MenuBtn>
                             <MenuBtn onClick={() => deletePost(props.id)}>Supprimer</MenuBtn>
                         </StyledMenu>
                     </div>

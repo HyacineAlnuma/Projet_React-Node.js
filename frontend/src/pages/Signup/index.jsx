@@ -6,6 +6,7 @@ import colors from '../../utils/style/colors';
 import { FiMail } from "react-icons/fi";
 import { BiKey, BiDownload, BiImage } from "react-icons/bi";
 import { BsFillPersonFill } from "react-icons/bs";
+import { AiFillCloseCircle } from 'react-icons/ai';
 
 
 const FormBox = styled.div `
@@ -84,18 +85,17 @@ const StyledBtn = styled.input `
 const IconWrapper = styled.div `
     position: absolute;
     left: 105px;
-    top: 329px;
     ${(props) => props.type === 'email' &&
-        `top: 132px;`
+        `top: 136px;`
     };
     ${(props) => props.type === 'key' &&
-        `top: 229px;`
+        `top: 233px;`
     };
     ${(props) => props.type === 'person' &&
-        `top: 329px;`
+        `top: 333px;`
     };
     ${(props) => props.type === 'image' &&
-        `top: 421px;`
+        `top: 425px;`
     };
     @media all and (max-width: 540px) {
         left: 60px;
@@ -120,7 +120,7 @@ const PictureWrapper = styled.div `
     img {
         width: 100px;
         height: auto;
-        margin: auto;
+        margin: 0;
     }
     input[type="file"] {
         visibility: hidden;
@@ -136,10 +136,27 @@ const PictureWrapper = styled.div `
         gap 10px;
         
     }
+    .imageWrapper {
+        margin: auto;
+        display: flex;
+    }
+    .cancelbtn {
+        background-color: ${colors.backgroundWhite};
+        color: ${colors.tertiary};
+        padding: 6px 6px 6px 7px;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        &:hover {
+            background-color: #DCDCDC;
+            cursor: pointer;
+        }
+    }
 `;
 
 
-function SignupBox() {
+function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -191,7 +208,12 @@ function SignupBox() {
                 <PictureWrapper>
                     <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
                     <input id='files' type="file" onChange={(e) => {imageHandler(e)}}/>
-                    { image !== '' && <img src={image} alt="" /> }
+                    { image !== '' && 
+                        <div className='imageWrapper'>
+                            <img src={image} alt="" />
+                            <button className='cancelbtn' onClick={() => setImage('')}><AiFillCloseCircle/></button>
+                        </div>
+                    }
                 </PictureWrapper>
                 <StyledBtn type="submit" value="Créer un compte"/>
             </StyledForm>
@@ -199,4 +221,4 @@ function SignupBox() {
     );
 }
 
-export default SignupBox;
+export default Signup;

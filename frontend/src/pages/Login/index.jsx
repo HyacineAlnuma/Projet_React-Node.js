@@ -84,7 +84,7 @@ const StyledBtn = styled.input `
 const EmailWrapper = styled.div `
     position: absolute;
     left: 120px;
-    top: 157px;
+    top: 161px;
     @media all and (max-width: 540px) {
         left: 60px;
     }
@@ -93,13 +93,13 @@ const EmailWrapper = styled.div `
 const KeyWrapper = styled.div `
     position: absolute;
     left: 120px;
-    top: 265px;
+    top: 269px;
     @media all and (max-width: 540px) {
         left: 60px;
     }
 `;
 
-function LoginBox() {
+function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -146,4 +146,4 @@ function LoginBox() {
     );
 }
 
-export default LoginBox;
+export default Login;

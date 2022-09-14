@@ -202,6 +202,7 @@ function Comments(props) {
         if (userId === props.userId || userRole === 'admin') {
                 setUsersComment(true);
             }; 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function deleteComment(data) {
@@ -261,7 +262,7 @@ function Comments(props) {
                 <div ref={menuRef}>
                     <OpenMenuBtn onClick={() => toggle()}><BiDotsHorizontalRounded size={25}/></OpenMenuBtn>
                     <StyledMenu className={`comment_menu ${openMenu? 'active' : 'inactive'}`}>
-                        <MenuBtn onClick={() => setUpdateOn(true)} >Modifier</MenuBtn>
+                        <MenuBtn onClick={() => {setUpdateOn(true); toggle();}} >Modifier</MenuBtn>
                         <MenuBtn onClick={() => deleteComment(props.id)}>Supprimer</MenuBtn>
                     </StyledMenu>
                 </div>

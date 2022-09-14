@@ -7,7 +7,6 @@ import Cookie from 'js-cookie';
 import { FiMenu } from "react-icons/fi";
 import { CgClose } from "react-icons/cg";
 import { useClickOutside } from '../../utils/hooks/useClickOutside';
-import { useEffect } from 'react';
 
 const HeaderStyle = styled.header`
     display: flex;
@@ -202,6 +201,7 @@ function Header() {
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         localStorage.removeItem('pictureUrl');
+        toggle();
     }
 
     return(
@@ -220,7 +220,7 @@ function Header() {
                             </IconWrapper>                 
                         </OpenMenuBtn>
                         <StyledMenu className={`menu ${openMenu? 'active' : 'inactive'}`}>
-                            <MenuBtn to='/profile'>Modifier le profil</MenuBtn>
+                            <MenuBtn onClick={() => toggle()} to='/profile'>Modifier le profil</MenuBtn>
                             <MenuBtn to="/login" onClick={Logout}>
                                 Se déconnecter
                             </MenuBtn>

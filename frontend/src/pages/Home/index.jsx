@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -27,7 +27,7 @@ const HomeBox = styled.div `
 const StyledTitle = styled.h2 `
     margin: 50px 0;
     color: ${colors.tertiary};
-    font-size: 2rem;
+    font-size: 2.1rem;
     font-weight: 600;
     position: relative;
     z-index: 1;
@@ -38,7 +38,7 @@ const TitleUnderline = styled.div `
     width: 223px;
     background-color:${colors.secondary};
     position: absolute;
-    top: 194px;
+    top: 197px;
     left: 24.8%;
     z-index: 0;
     @media all and (max-width: 1275px) {
@@ -55,11 +55,18 @@ function Home() {
 
     const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
     const encryptedToken = Cookie.get('token');
-    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const token = useRef('');
 
     useEffect(() => {
-        let token = Cookie.get('token');
-        if (token == null) {
+        if (encryptedToken != null) {
+            token.current = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        // let token = Cookie.get('token');
+        if (encryptedToken == null) {
             navigate('/login');
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,7 +74,7 @@ function Home() {
 
     useEffect(() => {
         axios.get('http://localhost:4200/api/posts',{ 
-            headers: {"Authorization" : `Bearer ${token}`} 
+            headers: {"Authorization" : `Bearer ${token.current}`} 
         })
             .then(res => {
                 setPostsList(res.data.results);

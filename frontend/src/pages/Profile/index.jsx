@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import { BiDownload } from 'react-icons/bi';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
 import CryptoJS from 'crypto-js';
@@ -36,6 +37,22 @@ const ProfileBox = styled.form `
     input[type="file"] {
         visibility: hidden;
     }
+    .imageWrapper {
+        display: flex;
+    }
+    .cancelbtn {
+        background-color: ${colors.backgroundLight};
+        color: ${colors.tertiary};
+        padding: 6px 6px 6px 7px;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        &:hover {
+            background-color: #DCDCDC;
+            cursor: pointer;
+        }
+    }
     @media all and (max-width: 680px) {
         width: 100%;
         padding-left: 30px;
@@ -48,7 +65,7 @@ const TitleWrapper = styled.div `
 
 const StyledTitle = styled.h2 `
     margin: 50px 0;
-    font-size: 2rem;
+    font-size: 2.1rem;
     font-weight: 600;
     position: relative;
     z-index: 2;
@@ -64,7 +81,7 @@ const TitleUnderline = styled.div `
     height: 13px;
     background-color:${colors.secondary};
     position: absolute;
-    top: 22px;
+    top: 25px;
     left: -5px;
     z-index: 0;
     ${(props) => props.number === '1' &&
@@ -112,11 +129,17 @@ function Profile() {
     const [file, setFile] = useState();
     const [image, setImage] = useState('');
     const navigate = useNavigate();
+    const userId = localStorage.getItem('userId');
     const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
     const encryptedToken = Cookie.get('token');
-    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const token = useRef('');
 
-    const userId = localStorage.getItem('userId');
+    useEffect(() => {
+        if (encryptedToken != null) {
+            token.current = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         let token = Cookie.get('token');
@@ -148,7 +171,7 @@ function Profile() {
             window.alert("Le nom d'utilisateur ne doit pas dépacer 25 caractères");
         } else {
             axios.put('http://localhost:4200/api/auth/modify', putData, { 
-                headers: {"Authorization" : `Bearer ${token}`} 
+                headers: {"Authorization" : `Bearer ${token.current}`} 
             })
                 .then(res => {
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);
@@ -165,7 +188,12 @@ function Profile() {
             <TitleWrapper><StyledTitle>Modifier la photo de profil</StyledTitle><TitleUnderline number='1'></TitleUnderline></TitleWrapper>
             <label htmlFor="files"><BiDownload size={22}/> Importer une image</label>
             <input id="files" type="file" onChange={(e) => {imageHandler(e)}}/>
-            { image !== '' && <img src={image} alt="" /> }
+            { image !== '' && 
+                <div className='imageWrapper'>
+                    <img src={image} alt="" />
+                    <button className='cancelbtn' onClick={() => setImage('')}><AiFillCloseCircle/></button>
+                </div>
+            }
             <TitleWrapper><StyledTitle>Modifier le nom d'utilisateur</StyledTitle><TitleUnderline number='2'></TitleUnderline></TitleWrapper>
             <StyledInput type="text" placeholder="Nouveau nom d'utilisateur"  value={username} onChange={(e) => setUsername(e.target.value)}/> <br />
             <p>(25 caractères max.)</p>
