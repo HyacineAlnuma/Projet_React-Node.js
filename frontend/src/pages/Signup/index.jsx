@@ -7,6 +7,7 @@ import { FiMail } from "react-icons/fi";
 import { BiKey, BiDownload, BiImage } from "react-icons/bi";
 import { BsFillPersonFill } from "react-icons/bs";
 import { AiFillCloseCircle } from 'react-icons/ai';
+import { useImageHandler } from '../../utils/hooks/useImageHandler';
 
 
 const FormBox = styled.div `
@@ -160,19 +161,20 @@ function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [file, setFile] = useState();
-    const [image, setImage] = useState('');
+    // const [file, setFile] = useState();
+    // const [image, setImage] = useState('');
     const navigate = useNavigate();
+    const {file, image, setImage, imageHandler } = useImageHandler();
 
-    function imageHandler(e) {
-        let files = Array.from(e.target.files);
-        setFile(files[0]);
-        const reader = new FileReader();
-        reader.readAsDataURL(files[0]);
-        reader.onload = () => {
-            setImage(reader.result?.toString() ?? '');
-        };
-    }
+    // function imageHandler(e) {
+    //     let files = Array.from(e.target.files);
+    //     setFile(files[0]);
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(files[0]);
+    //     reader.onload = () => {
+    //         setImage(reader.result?.toString() ?? '');
+    //     };
+    // }
 
     function handleSubmit(e) {
         e.preventDefault();

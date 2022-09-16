@@ -7,6 +7,7 @@ import { FiMail } from "react-icons/fi";
 import { BiKey } from "react-icons/bi";
 import setCookie  from '../../utils/hooks/SetCookie';
 import CryptoJS from 'crypto-js';
+import { passphrase } from '../../utils/Constantes';
 
 const FormBox = styled.div `
     margin: auto;
@@ -117,9 +118,7 @@ function Login() {
                     localStorage.setItem('userId', res.data.userId);
                     localStorage.setItem('username', res.data.username);
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);
-                    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-                    const encryptedToken = CryptoJS.AES.encrypt(res.data.token, passphrase).toString();
-                    setCookie('token', encryptedToken);
+                    setCookie('token', res.data.token);
                     const encryptedUserRole = CryptoJS.AES.encrypt(res.data.userRole, passphrase).toString();
                     setCookie('userRole', encryptedUserRole);
                     navigate('/home');

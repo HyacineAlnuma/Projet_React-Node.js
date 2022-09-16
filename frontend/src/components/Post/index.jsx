@@ -8,6 +8,7 @@ import { BiCommentDetail, BiDotsVerticalRounded, BiDownload } from 'react-icons/
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import CryptoJS from 'crypto-js';
 import Utf8 from 'crypto-js/enc-utf8';
+import { passphrase } from '../../utils/Constantes';
 
 import CommentSection from '../CommentSection';
 
@@ -208,9 +209,7 @@ function Post(props) {
     const [openMenu, toggle] = useClickOutside(menuRef);
     const [usersPost, setUsersPost] = useState(false);
     
-    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-    const encryptedToken = Cookie.get('token');
-    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const token = Cookie.get('token');
     const encryptedUserRole = Cookie.get('userRole');
     const userRole = CryptoJS.AES.decrypt(encryptedUserRole, passphrase).toString(Utf8);
     const userId = +localStorage.getItem('userId');

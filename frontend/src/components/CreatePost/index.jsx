@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import { BiDownload } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import Cookie from 'js-cookie';
-import CryptoJS from 'crypto-js';
-import Utf8 from 'crypto-js/enc-utf8';
+import { useImageHandler } from '../../utils/hooks/useImageHandler';
 
 const NewPost = styled.form `
     display: flex;
@@ -126,31 +125,11 @@ const SubmitBtn = styled.input `
 
 function CreatePost() {
     const [textpost, setTextpost] = useState('');
-    const [file, setFile] = useState();
-    const [image, setImage] = useState('');
+    const {file, image,  setFile, setImage, imageHandler } = useImageHandler();
     const profilePic = localStorage.getItem('pictureUrl');
 
     const userId = localStorage.getItem('userId');
-    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-    const encryptedToken = Cookie.get('token');
-    const token = useRef('');
-
-    useEffect(() => {
-        if (encryptedToken != null) {
-            token.current = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    function imageHandler(e) {
-        let files = Array.from(e.target.files);
-        setFile(files[0]);
-        const reader = new FileReader();
-        reader.readAsDataURL(files[0]);
-        reader.onload = () => {
-            setImage(reader.result?.toString() ?? '');
-        };
-    }
+    const token = Cookie.get('token');
 
     function createPost(e) {
         e.preventDefault();
@@ -159,7 +138,7 @@ function CreatePost() {
         postData.append('textpost', textpost);
         postData.append('imageUrl', file);
         axios.post('http://localhost:4200/api/posts', postData, { 
-            headers: {"Authorization" : `Bearer ${token.current}`}
+            headers: {"Authorization" : `Bearer ${token}`}
         })
             .then(res => {
                 console.log(res);

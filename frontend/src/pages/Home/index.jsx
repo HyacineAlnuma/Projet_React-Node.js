@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
-import CryptoJS from 'crypto-js';
-import Utf8 from 'crypto-js/enc-utf8';
 
 import Post from '../../components/Post';
 import CreatePost from '../../components/CreatePost';
@@ -53,20 +51,10 @@ function Home() {
     const [postsList, setPostsList] = useState([]);
     const navigate = useNavigate();
 
-    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-    const encryptedToken = Cookie.get('token');
-    const token = useRef('');
+    const token = Cookie.get('token');
 
     useEffect(() => {
-        if (encryptedToken != null) {
-            token.current = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        // let token = Cookie.get('token');
-        if (encryptedToken == null) {
+        if (token == null) {
             navigate('/login');
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,7 +62,7 @@ function Home() {
 
     useEffect(() => {
         axios.get('http://localhost:4200/api/posts',{ 
-            headers: {"Authorization" : `Bearer ${token.current}`} 
+            headers: {"Authorization" : `Bearer ${token}`} 
         })
             .then(res => {
                 setPostsList(res.data.results);

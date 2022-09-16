@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -6,8 +6,7 @@ import { BiDownload } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import colors from '../../utils/style/colors';
 import Cookie from 'js-cookie';
-import CryptoJS from 'crypto-js';
-import Utf8 from 'crypto-js/enc-utf8';
+import { useImageHandler } from '../../utils/hooks/useImageHandler';
 
 const ProfileBox = styled.form `
     width: 50%;
@@ -126,38 +125,17 @@ const StyledBtn = styled.input `
 
 function Profile() {
     const [username, setUsername] = useState('');
-    const [file, setFile] = useState();
-    const [image, setImage] = useState('');
     const navigate = useNavigate();
+    const {file, image, setImage, imageHandler } = useImageHandler();
     const userId = localStorage.getItem('userId');
-    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-    const encryptedToken = Cookie.get('token');
-    const token = useRef('');
+    const token = Cookie.get('token');
 
     useEffect(() => {
-        if (encryptedToken != null) {
-            token.current = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        let token = Cookie.get('token');
         if (token == null) {
             navigate('/login');
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    function imageHandler(e) {
-        let files = Array.from(e.target.files);
-        setFile(files[0]);
-        const reader = new FileReader();
-        reader.readAsDataURL(files[0]);
-        reader.onload = () => {
-            setImage(reader.result?.toString() ?? '');
-        };
-    }
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -171,7 +149,7 @@ function Profile() {
             window.alert("Le nom d'utilisateur ne doit pas dépacer 25 caractères");
         } else {
             axios.put('http://localhost:4200/api/auth/modify', putData, { 
-                headers: {"Authorization" : `Bearer ${token.current}`} 
+                headers: {"Authorization" : `Bearer ${token}`} 
             })
                 .then(res => {
                     localStorage.setItem('pictureUrl', res.data.pictureUrl);

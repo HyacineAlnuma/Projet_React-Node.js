@@ -8,6 +8,7 @@ import Cookie from 'js-cookie';
 import { useClickOutside } from '../../utils/hooks/useClickOutside';
 import CryptoJS from 'crypto-js';
 import Utf8 from 'crypto-js/enc-utf8';
+import { passphrase } from '../../utils/Constantes';
 
 const Comment = styled.div `
     width: 100%;
@@ -191,9 +192,7 @@ function Comments(props) {
     const [openMenu, toggle] = useClickOutside(menuRef);
     const [usersComment, setUsersComment] = useState(false);
 
-    const passphrase = 'eDgf52LopfXCvs8dsfg456LmsifBs785';
-    const encryptedToken = Cookie.get('token');
-    const token = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(Utf8);
+    const token = Cookie.get('token');
     const encryptedUserRole = Cookie.get('userRole');
     const userRole = CryptoJS.AES.decrypt(encryptedUserRole, passphrase).toString(Utf8);
     const userId = +localStorage.getItem('userId');
