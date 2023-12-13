@@ -31,4 +31,4 @@ In the backend directory, you can run:
 #### `node server`
 
 Runs the app in the development mode.\
-Open [http://localhost:4200](http://localhost:4200) to view it in your browser.
+
